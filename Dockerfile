@@ -50,4 +50,7 @@ WORKDIR /workspace
 # Warm up lein so the standalone jar gets downloaded during image build
 RUN lein version || true
 
+RUN git config --global user.name "Jukka Villstedt"
+RUN git config --global user.email "juvi@iki.fi"
+
 CMD ["/bin/bash"]
