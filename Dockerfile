@@ -3,6 +3,7 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
+ENV TZ=Europe/Helsinki
 
 # Base OS packages + Java + tools commonly needed in Clojure/CLJS projects
 RUN apt-get update && apt-get install -y \
@@ -16,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     bash \
     openssh-client \
     openjdk-21-jdk \
+    emacs-nox \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 22 from NodeSource
@@ -52,5 +54,7 @@ RUN lein version || true
 
 RUN git config --global user.name "Jukka Villstedt"
 RUN git config --global user.email "juvi@iki.fi"
+
+ENV EDITOR=emacs
 
 CMD ["/bin/bash"]
