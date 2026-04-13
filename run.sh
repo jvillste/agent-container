@@ -6,8 +6,11 @@ mkdir -p "${AGENT_CONTAINER_HOME}/pi/agent"
 cp "${AGENT_CONTAINERS_HOME}/models.json" "${AGENT_CONTAINER_HOME}/pi/agent"
 
 JUKKA_OPENAI_API_KEY_FILE_NAME="${AGENT_CONTAINER_HOME}/pi/jukka-openai-api-key"
+NITOR_OPENAI_API_KEY_FILE_NAME="${AGENT_CONTAINER_HOME}/pi/nitor-openai-api-key"
 JUKKA_HUGGINGFACE_API_KEY_FILE_NAME="${AGENT_CONTAINER_HOME}/pi/jukka-huggingface-api-key"
+
 security find-generic-password -s "jukka-openai-api-key" -a "jukka-openai-api-key" -w > "${JUKKA_OPENAI_API_KEY_FILE_NAME}"
+security find-generic-password -s "nitor-openai-api-key" -a "nitor-openai-api-key" -w > "${NITOR_OPENAI_API_KEY_FILE_NAME}"
 security find-generic-password -s "jukka-huggingface-api-key" -a "jukka-huggingface-api-key" -w > "${JUKKA_HUGGINGFACE_API_KEY_FILE_NAME}"
 
 docker run --rm -it \
@@ -24,4 +27,5 @@ docker run --rm -it \
       agent-container:latest
 
 rm "${JUKKA_OPENAI_API_KEY_FILE_NAME}"
+rm "${NITOR_OPENAI_API_KEY_FILE_NAME}"
 rm "${JUKKA_HUGGINGFACE_API_KEY_FILE_NAME}"

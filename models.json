@@ -1,5 +1,17 @@
 {
   "providers": {
+    "nitor-openai": {
+      "baseUrl": "https://api.openai.com/v1",
+      "api": "openai-responses",
+      "apiKey": "!cat ~/.pi/nitor-openai-api-key",
+      "models": [
+        {
+          "id": "gpt-5.4",
+          "name": "gpt-5.4",
+          "reasoning": true
+        }
+      ]
+    },
     "jukka-openai": {
       "baseUrl": "https://api.openai.com/v1",
       "api": "openai-responses",
@@ -29,6 +41,9 @@
           "contextWindow": 128000,
           "maxTokens": 32000,
           "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "Qwen/Qwen3-Coder-Next:novita"
         }
       ]
     },
