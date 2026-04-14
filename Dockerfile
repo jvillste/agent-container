@@ -31,6 +31,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource_setup.sh
 RUN npm install -g yarn
 RUN npm install -g @mariozechner/pi-coding-agent
 
+# Install Clojure CLI
+RUN curl -L -O https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh \
+    && chmod +x linux-install.sh \
+    && ./linux-install.sh \
+    && rm -f linux-install.sh
+
 # Install Leiningen
 # Leiningen's GitHub mirror states the project is moving to Codeberg,
 # but the stable script URL remains the usual installer entry point.
