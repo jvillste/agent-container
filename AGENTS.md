@@ -1,3 +1,5 @@
+# Principles
+
 ## 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
@@ -53,3 +55,15 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+
+# Code style
+
+- Use descriptive english words, no abbreviations or single letter names.
+- Use foo-to-bar instead of foo->bar when naming functions.
+- Split code to pure functions and to imperative functions and add
+  tests for pure functinos right below the function implementation, if
+  the function is worth testing.
+- Use separate namespaces for tests only when the test requires
+  imports that are not available in the namespace that is being
+  tested.
