@@ -8,7 +8,8 @@
         {
           "id": "gpt-5.4",
           "name": "gpt-5.4",
-          "reasoning": true
+          "reasoning": true,
+          "contextWindow": 256000
         }
       ]
     },
