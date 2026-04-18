@@ -60,10 +60,17 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 # Code style
 
 - Use descriptive english words, no abbreviations or single letter names.
-- Use foo-to-bar instead of foo->bar when naming functions.
+
+# Clojure code style
+
 - Split code to pure functions and to imperative functions and add
   tests for pure functinos right below the function implementation, if
   the function is worth testing.
 - Use separate namespaces for tests only when the test requires
   imports that are not available in the namespace that is being
   tested.
+- Use foo-to-bar instead of foo->bar when naming functions.
+- If possible, give the last word in the namespace path as alias for
+  required namespaces. If the last word is "core" use the one before
+  that. Example: (ns example (:require [foo.bar :as bar] [foo.core :as
+  foo]))
