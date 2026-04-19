@@ -44,16 +44,20 @@ RUN curl -fsSL https://raw.githubusercontent.com/technomancy/leiningen/stable/bi
       -o /usr/local/bin/lein \
     && chmod +x /usr/local/bin/lein
 
-# Create a non-root user
-# RUN useradd -ms /bin/bash dev \
-#     && mkdir -p /workspace /home/dev/.npm /home/dev/.m2 /home/dev/.lein \
-#     && chown -R dev:dev /workspace /home/dev
+# install babashka
+RUN bash -ic 'bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)'
+
 
 USER ubuntu
 WORKDIR /workspace
 
-# ENV HOME=/home/dev
-# ENV PATH="/home/dev/.npm-global/bin:${PATH}"
+# install bbin
+RUN mkdir -p ~/.local/bin && curl -o- -L https://raw.githubusercontent.com/babashka/bbin/v0.2.5/bbin > ~/.local/bin/bbin && chmod +x ~/.local/bin/bbin
+RUN echo 'export PATH="$PATH:$HOME/.local/bin"' >> /home/ubuntu/.bashrc
+
+# install clj-paren-repair
+RUN ~/.local/bin/bbin install https://github.com/bhauman/clojure-mcp-light.git --tag v0.2.2 --as clj-paren-repair --main-opts '["-m" "clojure-mcp-light.paren-repair"]'
+RUN bash -lic 'clj-paren-repair -h'
 
 # Warm up lein so the standalone jar gets downloaded during image build
 RUN lein version || true

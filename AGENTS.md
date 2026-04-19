@@ -62,8 +62,9 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 - Use descriptive english words, no abbreviations or single letter names.
 
-# Clojure code style
-
+# Writing clojure code
+- If you run into paren related syntax errors, run "clj-paren-repair
+  <file-name>" with bash to fix the parens in the file.
 - Split code to pure functions and to imperative functions and add
   tests for pure functinos right below the function implementation, if
   the function is worth testing.
