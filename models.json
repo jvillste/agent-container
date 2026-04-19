@@ -49,6 +49,10 @@
         {
           "id": "Qwen/Qwen3-Coder-Next:novita",
           "contextWindow": 256000
+        },
+        {
+          "id": "google/gemma-4-31B-it",
+          "contextWindow": 256000
         }
       ]
     },
