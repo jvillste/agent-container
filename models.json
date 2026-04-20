@@ -61,6 +61,16 @@
       "api": "openai-completions",
       "apiKey": "!cat ~/.pi/jukka-openrouter-api-key"
     },
+    "lm-studio": {
+      "baseUrl": "http://host.docker.internal:1234/v1",
+      "api": "openai-completions",
+      "apiKey": "lm-studio",
+      "models": [
+        {"id": "qwen3.6-35b-a3b-mlx",
+         "contextWindow": 256000
+        }
+      ]
+    },
     "llama": {
       "baseUrl": "http://host.docker.internal:8080/v1",
       "api": "openai-completions",
@@ -70,14 +80,14 @@
          "contextWindow": 256000
         },
         {
-         "id": "unsloth/gpt-oss-20b-GGUF:F16",
-         "name": "unsloth/gpt-oss-20b-GGUF:F16",
-         "reasoning": true,
-         "input": ["text"],
-         "contextWindow": 128000,
-         "maxTokens": 32000,
-         "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
-         },
+          "id": "unsloth/gpt-oss-20b-GGUF:F16",
+          "name": "unsloth/gpt-oss-20b-GGUF:F16",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 128000,
+          "maxTokens": 32000,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
         {
           "id": "unsloth/gpt-oss-120b-GGUF",
           "name": "unsloth/gpt-oss-120b-GGUF",
