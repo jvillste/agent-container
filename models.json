@@ -56,6 +56,11 @@
         }
       ]
     },
+    "openrouter": {
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "api": "openai-completions",
+      "apiKey": "!cat ~/.pi/jukka-openrouter-api-key"
+    },
     "llama": {
       "baseUrl": "http://host.docker.internal:8080/v1",
       "api": "openai-completions",
