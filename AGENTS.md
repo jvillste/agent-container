@@ -57,6 +57,12 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
+# Coding workflow
+
+- Always run tests before concluding that the requested code change is
+  completed.
+- If you suspect that the user made a mistake in their request, ask if
+  they acutally meant something else.
 
 # Code style
 
@@ -78,3 +84,5 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
   required namespaces. If the last word is "core" use the one before
   that. Example: (ns example (:require [foo.bar :as bar] [foo.core :as
   foo]))
+- remember that functions that call other functions must come after
+  the called functions in the namespace
