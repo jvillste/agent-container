@@ -60,7 +60,9 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 # Code style
 
-- Use descriptive english words, no abbreviations or single letter names.
+- Use descriptive english words, no abbreviations or single letter
+  names. For example "string" insteado of "str" for the clojure.string
+  alias.
 
 # Writing clojure code
 - If you run into paren related syntax errors, run "clj-paren-repair
