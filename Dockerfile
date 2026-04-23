@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     zip \
     bash \
+    python3 \
     openssh-client \
     openjdk-21-jdk \
     emacs-nox \
@@ -47,6 +48,8 @@ RUN curl -fsSL https://raw.githubusercontent.com/technomancy/leiningen/stable/bi
 # install babashka
 RUN bash -ic 'bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)'
 
+
+RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 USER ubuntu
 WORKDIR /workspace
