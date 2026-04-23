@@ -79,6 +79,9 @@
         {"id": "unsloth_Qwen3.6-35B-A3B-GGUF_Qwen3.6-35B-A3B-UD-Q8_K_XL.gguf",
          "contextWindow": 256000
         },
+        {"id": "unsloth_Qwen3.6-27B-GGUF_Qwen3.6-27B-UD-Q8_K_XL.gguf",
+         "contextWindow": 256000
+        },
         {
           "id": "unsloth/gpt-oss-20b-GGUF:F16",
           "name": "unsloth/gpt-oss-20b-GGUF:F16",
