@@ -79,6 +79,9 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - Use separate namespaces for tests only when the test requires
   imports that are not available in the namespace that is being
   tested.
+- The name for a test that tests a single function should be formatted
+  by prefixing the function name with "test-". For example
+  "my-function" should be formatted like "test-my-function".
 - Use foo-to-bar instead of foo->bar when naming functions.
 - If possible, give the last word in the namespace path as alias for
   required namespaces. If the last word is "core" use the one before
