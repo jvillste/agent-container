@@ -101,6 +101,22 @@
           "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
         }
       ]
+    },
+    "mlx-openai-server": {
+      "baseUrl": "http://host.docker.internal:8000/v1",
+      "api": "openai-completions",
+      "apiKey": "foo",
+      "models": [
+        {"id": "unsloth/Qwen3.6-27B-UD-MLX-4bit",
+         "contextWindow": 256000
+        },
+        {"id": "unsloth/Qwen3.6-27B-MLX-8bit",
+         "contextWindow": 256000
+        },
+        {"id": "unsloth/Qwen3.6-35B-A3B-UD-MLX-4bit",
+         "contextWindow": 256000
+        }
+      ]
     }
   }
 }
