@@ -51,12 +51,12 @@ RUN bash -ic 'bash < <(curl -s https://raw.githubusercontent.com/babashka/babash
 
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 
-USER ubuntu
+USER root
 WORKDIR /workspace
 
 # install bbin
 RUN mkdir -p ~/.local/bin && curl -o- -L https://raw.githubusercontent.com/babashka/bbin/v0.2.5/bbin > ~/.local/bin/bbin && chmod +x ~/.local/bin/bbin
-RUN echo 'export PATH="$PATH:$HOME/.local/bin"' >> /home/ubuntu/.bashrc
+RUN echo 'export PATH="$PATH:$HOME/.local/bin"' >> /root/.bashrc
 
 # install clj-paren-repair
 RUN ~/.local/bin/bbin install https://github.com/bhauman/clojure-mcp-light.git --tag v0.2.2 --as clj-paren-repair --main-opts '["-m" "clojure-mcp-light.paren-repair"]'

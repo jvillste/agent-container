@@ -4,6 +4,7 @@ AGENT_CONTAINER_HOME="${AGENT_CONTAINERS_HOME}/${PROJECT_NAME}"
 
 mkdir -p "${AGENT_CONTAINER_HOME}/pi/agent"
 cp "${AGENT_CONTAINERS_HOME}/models.json" "${AGENT_CONTAINER_HOME}/pi/agent/"
+cp "${AGENT_CONTAINERS_HOME}/settings.json" "${AGENT_CONTAINER_HOME}/pi/agent/"
 cp "${AGENT_CONTAINERS_HOME}/AGENTS.md" "${AGENT_CONTAINER_HOME}/pi/agent/"
 
 JUKKA_OPENAI_API_KEY_FILE_NAME="${AGENT_CONTAINER_HOME}/pi/jukka-openai-api-key"
@@ -18,14 +19,21 @@ security find-generic-password -s "jukka-openrouter-api-key" -a "jukka-openroute
 
 docker run --rm -it \
       --cap-drop=ALL \
+      --cap-add=CHOWN \
+      --cap-add=DAC_OVERRIDE \
+      --cap-add=FOWNER \
+      --cap-add=FSETID \
+      --cap-add=SETFCAP \
+      --cap-add=SETUID \
+      --cap-add=SETGID \
       --security-opt=no-new-privileges \
       --memory=16g \
       --pids-limit=512 \
       -v "$(pwd):/workspace" \
-      -v "${AGENT_CONTAINER_HOME}/m2:/home/ubuntu/.m2" \
-      -v "${AGENT_CONTAINER_HOME}/lein:/home/ubuntu/.lein" \
-      -v "${AGENT_CONTAINER_HOME}/npm:/home/ubuntu/.npm" \
-      -v "${AGENT_CONTAINER_HOME}/pi:/home/ubuntu/.pi" \
+      -v "${AGENT_CONTAINER_HOME}/m2:/root/.m2" \
+      -v "${AGENT_CONTAINER_HOME}/lein:/root/.lein" \
+      -v "${AGENT_CONTAINER_HOME}/npm:/root/.npm" \
+      -v "${AGENT_CONTAINER_HOME}/pi:/root/.pi" \
       -w /workspace \
       agent-container:latest
 
