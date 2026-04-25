@@ -4,7 +4,9 @@ AGENT_CONTAINER_HOME="${AGENT_CONTAINERS_HOME}/${PROJECT_NAME}"
 
 mkdir -p "${AGENT_CONTAINER_HOME}/pi/agent"
 cp "${AGENT_CONTAINERS_HOME}/models.json" "${AGENT_CONTAINER_HOME}/pi/agent/"
-cp "${AGENT_CONTAINERS_HOME}/settings.json" "${AGENT_CONTAINER_HOME}/pi/agent/"
+if [ ! -f "${AGENT_CONTAINER_HOME}/pi/agent/settings.json" ]; then
+    cp "${AGENT_CONTAINERS_HOME}/settings.json" "${AGENT_CONTAINER_HOME}/pi/agent/"
+fi
 cp "${AGENT_CONTAINERS_HOME}/AGENTS.md" "${AGENT_CONTAINER_HOME}/pi/agent/"
 
 JUKKA_OPENAI_API_KEY_FILE_NAME="${AGENT_CONTAINER_HOME}/pi/jukka-openai-api-key"
@@ -29,6 +31,7 @@ docker run --rm -it \
       --security-opt=no-new-privileges \
       --memory=16g \
       --pids-limit=512 \
+      -e "TAVILY_API_KEY=$(security find-generic-password -s travily-api-key -a travily-api-key -w)" \
       -v "$(pwd):/workspace" \
       -v "${AGENT_CONTAINER_HOME}/m2:/root/.m2" \
       -v "${AGENT_CONTAINER_HOME}/lein:/root/.lein" \
