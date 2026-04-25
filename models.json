@@ -2,14 +2,14 @@
   "providers": {
     "nitor-openai": {
       "baseUrl": "https://api.openai.com/v1",
-      "api": "openai-responses",
+      "api": "openai-completions",
       "apiKey": "!cat ~/.pi/nitor-openai-api-key",
       "models": [
         {
           "id": "gpt-5.4",
-          "name": "gpt-5.4",
           "reasoning": true,
-          "contextWindow": 256000
+          "contextWindow": 256000,
+          "input": ["text", "image"]
         }
       ]
     },
@@ -20,15 +20,15 @@
       "models": [
         {
           "id": "gpt-5.4",
-          "name": "gpt-5.4",
           "reasoning": true,
-          "input": ["text"],
-          "contextWindow": 256000,
-          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+          "input": ["text", "image"],
+          "contextWindow": 256000
         },
         {
           "id": "gpt-5.4-mini",
-          "reasoning": true
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 256000
         }
       ]
     },
