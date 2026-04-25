@@ -73,13 +73,14 @@
     },
     "llama": {
       "baseUrl": "http://host.docker.internal:8080/v1",
-      "api": "openai-responses",
+      "api": "openai-completions",
       "apiKey": "llama",
       "models": [
         {
           "id": "local-llama",
           "contextWindow": 256000,
-          "reasoning": true
+          "reasoning": true,
+          "input": ["text", "image"]
         }
       ]
     },
