@@ -2,7 +2,7 @@
   "providers": {
     "nitor-openai": {
       "baseUrl": "https://api.openai.com/v1",
-      "api": "openai-completions",
+      "api": "openai-responses",
       "apiKey": "!cat ~/.pi/nitor-openai-api-key",
       "models": [
         {
