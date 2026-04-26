@@ -19,7 +19,7 @@ security find-generic-password -s "nitor-openai-api-key" -a "nitor-openai-api-ke
 security find-generic-password -s "jukka-huggingface-api-key" -a "jukka-huggingface-api-key" -w > "${JUKKA_HUGGINGFACE_API_KEY_FILE_NAME}"
 security find-generic-password -s "jukka-openrouter-api-key" -a "jukka-openrouter-api-key" -w > "${JUKKA_OPENROUTER_API_KEY_FILE_NAME}"
 
-docker run --rm -it \
+docker run -it \
       --cap-drop=ALL \
       --cap-add=CHOWN \
       --cap-add=DAC_OVERRIDE \
