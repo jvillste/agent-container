@@ -70,4 +70,4 @@ RUN git config --global user.email "juvi@iki.fi"
 
 ENV EDITOR=emacs
 
-CMD ["/bin/bash"]
+CMD ["sleep", "infinity"]
