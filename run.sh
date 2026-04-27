@@ -19,7 +19,9 @@ security find-generic-password -s "nitor-openai-api-key" -a "nitor-openai-api-ke
 security find-generic-password -s "jukka-huggingface-api-key" -a "jukka-huggingface-api-key" -w > "${JUKKA_HUGGINGFACE_API_KEY_FILE_NAME}"
 security find-generic-password -s "jukka-openrouter-api-key" -a "jukka-openrouter-api-key" -w > "${JUKKA_OPENROUTER_API_KEY_FILE_NAME}"
 
-docker run -it \
+docker run \
+      --name "${PROJECT_NAME}" \
+      -it \
       --cap-drop=ALL \
       --cap-add=CHOWN \
       --cap-add=DAC_OVERRIDE \
@@ -33,9 +35,6 @@ docker run -it \
       --pids-limit=512 \
       -e "TAVILY_API_KEY=$(security find-generic-password -s travily-api-key -a travily-api-key -w)" \
       -v "$(pwd):/workspace" \
-      -v "${AGENT_CONTAINER_HOME}/m2:/root/.m2" \
-      -v "${AGENT_CONTAINER_HOME}/lein:/root/.lein" \
-      -v "${AGENT_CONTAINER_HOME}/npm:/root/.npm" \
       -v "${AGENT_CONTAINER_HOME}/pi:/root/.pi" \
       -w /workspace \
       agent-container:latest
