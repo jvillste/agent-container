@@ -49,6 +49,7 @@ fi
 # Start the container (creates if not exists above, reuses if it does)
 docker start "${PROJECT_NAME}" 2>/dev/null || true
 docker exec -it "${PROJECT_NAME}" bash
+docker stop "${PROJECT_NAME}" 2>/dev/null || true
 
 rm "${JUKKA_OPENAI_API_KEY_FILE_NAME}"
 rm "${NITOR_OPENAI_API_KEY_FILE_NAME}"
