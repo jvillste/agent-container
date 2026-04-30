@@ -1,5 +1,12 @@
 set -x
 
+NO_NETWORK=false
+for arg in "$@"; do
+    case "$arg" in
+        --no-network) NO_NETWORK=true ;;
+    esac
+done
+
 PROJECT_NAME="$(basename "$(pwd)")"
 AGENT_CONTAINERS_HOME="${HOME}/agent-containers"
 AGENT_CONTAINER_HOME="${AGENT_CONTAINERS_HOME}/${PROJECT_NAME}"
@@ -26,8 +33,13 @@ CONTAINER_EXISTS=$(docker ps -a --filter "name=^${PROJECT_NAME}$" --format '{{.N
 
 if [ -z "$CONTAINER_EXISTS" ]; then
     # First run: create the container (does not start it)
-    docker create \
-          --name "${PROJECT_NAME}" \
+    DOCKER_CREATE_ARGS=(
+        --name "${PROJECT_NAME}"
+    )
+    if [ "$NO_NETWORK" = true ]; then
+        DOCKER_CREATE_ARGS+=(--network=none)
+    fi
+    docker create "${DOCKER_CREATE_ARGS[@]}" \
           --cap-drop=ALL \
           --cap-add=CHOWN \
           --cap-add=DAC_OVERRIDE \
