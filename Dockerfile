@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     curl \
     git \
+    make \
     gnupg \
     rlwrap \
     unzip \
@@ -69,5 +70,10 @@ RUN git config --global user.name "Jukka Villstedt"
 RUN git config --global user.email "juvi@iki.fi"
 
 ENV EDITOR=emacs
+
+# install clojure surgeon
+RUN cd /root && git clone https://github.com/realgenekim/clj-surgeon.git && cd clj-surgeon && mkdir -p ~/bin && make install
+RUN echo 'export PATH="$PATH:$HOME/bin"' >> /root/.bashrc
+RUN mkdir -p ~/.pi/agent/skills/clj-surgeon && cp ~/clj-surgeon/skill.md ~/.pi/agent/skills/clj-surgeon/SKILL.md
 
 CMD ["sleep", "infinity"]
