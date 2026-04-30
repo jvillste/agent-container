@@ -18,11 +18,6 @@ if [ ! -f "${AGENT_CONTAINER_HOME}/pi/agent/settings.json" ]; then
 fi
 cp "${AGENT_CONTAINERS_HOME}/AGENTS.md" "${AGENT_CONTAINER_HOME}/pi/agent/"
 
-JUKKA_OPENAI_API_KEY=$(security find-generic-password -s "jukka-openai-api-key" -a "jukka-openai-api-key" -w)
-NITOR_OPENAI_API_KEY=$(security find-generic-password -s "nitor-openai-api-key" -a "nitor-openai-api-key" -w)
-JUKKA_HUGGINGFACE_API_KEY=$(security find-generic-password -s "jukka-huggingface-api-key" -a "jukka-huggingface-api-key" -w)
-JUKKA_OPENROUTER_API_KEY=$(security find-generic-password -s "jukka-openrouter-api-key" -a "jukka-openrouter-api-key" -w)
-
 # Check whether a container with this project name already exists
 CONTAINER_EXISTS=$(docker ps -a --filter "name=^${PROJECT_NAME}$" --format '{{.Names}}')
 
@@ -47,10 +42,10 @@ if [ -z "$CONTAINER_EXISTS" ]; then
           --memory=16g \
           --pids-limit=512 \
           -e "TAVILY_API_KEY=$(security find-generic-password -s travily-api-key -a travily-api-key -w)" \
-          -e "JUKKA_OPENAI_API_KEY=${JUKKA_OPENAI_API_KEY}" \
-          -e "NITOR_OPENAI_API_KEY=${NITOR_OPENAI_API_KEY}" \
-          -e "JUKKA_HUGGINGFACE_API_KEY=${JUKKA_HUGGINGFACE_API_KEY}" \
-          -e "JUKKA_OPENROUTER_API_KEY=${JUKKA_OPENROUTER_API_KEY}" \
+          -e "JUKKA_OPENAI_API_KEY=$(security find-generic-password -s 'jukka-openai-api-key' -a 'jukka-openai-api-key' -w)" \
+          -e "NITOR_OPENAI_API_KEY=$(security find-generic-password -s 'nitor-openai-api-key' -a 'nitor-openai-api-key' -w)" \
+          -e "JUKKA_HUGGINGFACE_API_KEY=$(security find-generic-password -s 'jukka-huggingface-api-key' -a 'jukka-huggingface-api-key' -w)" \
+          -e "JUKKA_OPENROUTER_API_KEY=$(security find-generic-password -s 'jukka-openrouter-api-key' -a 'jukka-openrouter-api-key' -w)" \
           -v "$(pwd):/workspace" \
           -v "${AGENT_CONTAINER_HOME}/pi:/root/.pi" \
           -w /workspace \
