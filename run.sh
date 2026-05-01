@@ -9,14 +9,6 @@ done
 
 PROJECT_NAME="$(basename "$(pwd)")"
 AGENT_CONTAINERS_HOME="${HOME}/agent-containers"
-AGENT_CONTAINER_HOME="${AGENT_CONTAINERS_HOME}/${PROJECT_NAME}"
-
-mkdir -p "${AGENT_CONTAINER_HOME}/pi/agent"
-cp "${AGENT_CONTAINERS_HOME}/models.json" "${AGENT_CONTAINER_HOME}/pi/agent/"
-if [ ! -f "${AGENT_CONTAINER_HOME}/pi/agent/settings.json" ]; then
-    cp "${AGENT_CONTAINERS_HOME}/settings.json" "${AGENT_CONTAINER_HOME}/pi/agent/"
-fi
-cp "${AGENT_CONTAINERS_HOME}/AGENTS.md" "${AGENT_CONTAINER_HOME}/pi/agent/"
 
 # Check whether a container with this project name already exists
 CONTAINER_EXISTS=$(docker ps -a --filter "name=^${PROJECT_NAME}$" --format '{{.Names}}')
@@ -47,12 +39,16 @@ if [ -z "$CONTAINER_EXISTS" ]; then
           -e "JUKKA_HUGGINGFACE_API_KEY=$(security find-generic-password -s 'jukka-huggingface-api-key' -a 'jukka-huggingface-api-key' -w)" \
           -e "JUKKA_OPENROUTER_API_KEY=$(security find-generic-password -s 'jukka-openrouter-api-key' -a 'jukka-openrouter-api-key' -w)" \
           -v "$(pwd):/workspace" \
-          -v "${AGENT_CONTAINER_HOME}/pi:/root/.pi" \
           -w /workspace \
           agent-container:latest
+
+    docker cp "${AGENT_CONTAINERS_HOME}/settings.json" "${PROJECT_NAME}:/root/.pi/agent/"
 fi
 
 # Start the container (creates if not exists above, reuses if it does)
 docker start "${PROJECT_NAME}" 2>/dev/null || true
+docker cp "${AGENT_CONTAINERS_HOME}/AGENTS.md" "${PROJECT_NAME}:/root/.pi/agent/"
+docker cp "${AGENT_CONTAINERS_HOME}/models.json" "${PROJECT_NAME}:/root/.pi/agent/"
+
 docker exec -it "${PROJECT_NAME}" bash
 docker stop "${PROJECT_NAME}" 2>/dev/null || true
