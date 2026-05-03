@@ -3,7 +3,7 @@
     "nitor-openai": {
       "baseUrl": "https://api.openai.com/v1",
       "api": "openai-responses",
-      "apiKey": "echo $NITOR_OPENAI_API_KEY",
+      "apiKey": "!echo $NITOR_OPENAI_API_KEY",
       "models": [
         {
           "id": "gpt-5.4",
@@ -16,7 +16,7 @@
     "jukka-openai": {
       "baseUrl": "https://api.openai.com/v1",
       "api": "openai-responses",
-      "apiKey": "echo $JUKKA_OPENAI_API_KEY",
+      "apiKey": "!echo $JUKKA_OPENAI_API_KEY",
       "models": [
         {
           "id": "gpt-5.4",
@@ -35,7 +35,7 @@
     "huggingface": {
       "baseUrl": "https://router.huggingface.co/v1",
       "api": "openai-completions",
-      "apiKey": "echo $JUKKA_HUGGINGFACE_API_KEY",
+      "apiKey": "!echo $JUKKA_HUGGINGFACE_API_KEY",
       "models": [
         {
           "id": "openai/gpt-oss-120b:novita",
@@ -59,7 +59,7 @@
     "openrouter": {
       "baseUrl": "https://openrouter.ai/api/v1",
       "api": "openai-completions",
-      "apiKey": "echo $JUKKA_OPENROUTER_API_KEY"
+      "apiKey": "!echo $JUKKA_OPENROUTER_API_KEY"
     },
     "lm-studio": {
       "baseUrl": "http://host.docker.internal:1234/v1",
