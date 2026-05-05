@@ -35,7 +35,6 @@ if [ -z "$CONTAINER_EXISTS" ]; then
           --pids-limit=512 \
           -e "TAVILY_API_KEY=$(security find-generic-password -s travily-api-key -a travily-api-key -w)" \
           -e "JUKKA_OPENAI_API_KEY=$(security find-generic-password -s 'jukka-openai-api-key' -a 'jukka-openai-api-key' -w)" \
-          -e "NITOR_OPENAI_API_KEY=$(security find-generic-password -s 'nitor-openai-api-key' -a 'nitor-openai-api-key' -w)" \
           -e "JUKKA_HUGGINGFACE_API_KEY=$(security find-generic-password -s 'jukka-huggingface-api-key' -a 'jukka-huggingface-api-key' -w)" \
           -e "JUKKA_OPENROUTER_API_KEY=$(security find-generic-password -s 'jukka-openrouter-api-key' -a 'jukka-openrouter-api-key' -w)" \
           -v "$(pwd):/workspace" \

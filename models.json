@@ -1,18 +1,5 @@
 {
   "providers": {
-    "nitor-openai": {
-      "baseUrl": "https://api.openai.com/v1",
-      "api": "openai-responses",
-      "apiKey": "!echo $NITOR_OPENAI_API_KEY",
-      "models": [
-        {
-          "id": "gpt-5.4",
-          "reasoning": true,
-          "contextWindow": 256000,
-          "input": ["text", "image"]
-        }
-      ]
-    },
     "jukka-openai": {
       "baseUrl": "https://api.openai.com/v1",
       "api": "openai-responses",
