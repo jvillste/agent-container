@@ -91,19 +91,19 @@
       "models": [
         {
           "id": "Qwen3.6-35B-A3B-MLX-8bit",
-          "contextWindow": 256000,
+          "contextWindow": 128000,
           "reasoning": true,
           "input": ["text", "image"]
         },
         {
           "id": "Qwen3.6-27B-MLX-8bit",
-          "contextWindow": 256000,
+          "contextWindow": 128000,
           "reasoning": true,
           "input": ["text", "image"]
         },
         {
           "id": "Qwen3.6-35B-A3B-UD-MLX-4bit",
-          "contextWindow": 32768,
+          "contextWindow": 128000,
           "reasoning": true,
           "input": ["text", "image"]
         }

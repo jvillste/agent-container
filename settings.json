@@ -8,6 +8,7 @@
     "jukka-openai/gpt-5.4",
     "Qwen3.6-35B-A3B-MLX-8bit",
     "Qwen3.6-27B-MLX-8bit",
-    "Qwen3.6-35B-A3B-UD-MLX-4bit"
+    "Qwen3.6-35B-A3B-UD-MLX-4bit",
+    "z-ai/glm-5.1"
   ]
 }
