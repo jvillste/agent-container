@@ -56,5 +56,7 @@ for skill in "${AGENT_CONTAINER_RESOURCES}/skills/"*; do
     docker cp "$skill" "${PROJECT_NAME}:/root/.pi/agent/skills/${skill_name}"
 done
 
+docker exec "${PROJECT_NAME}" touch /root/this-is-an-agent-container
+
 docker exec -it --detach-keys="ctrl-z,z" "${PROJECT_NAME}" bash
 docker stop "${PROJECT_NAME}" 2>/dev/null || true
