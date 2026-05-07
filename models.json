@@ -89,6 +89,12 @@
           "input": ["text", "image"]
         },
         {
+          "id": "Qwen3.6-27B-UD-MLX-4bit",
+          "contextWindow": 128000,
+          "reasoning": true,
+          "input": ["text", "image"]
+        },
+        {
           "id": "Qwen3.6-35B-A3B-UD-MLX-4bit",
           "contextWindow": 128000,
           "reasoning": true,
