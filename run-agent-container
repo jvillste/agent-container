@@ -8,7 +8,7 @@ for arg in "$@"; do
 done
 
 PROJECT_NAME="$(basename "$(pwd)")"
-AGENT_CONTAINERS_HOME="${HOME}/agent-containers"
+AGENT_CONTAINER_RESOURCES="${HOME}/agent-container-resources"
 
 # Check whether a container with this project name already exists
 CONTAINER_EXISTS=$(docker ps -a --filter "name=^${PROJECT_NAME}$" --format '{{.Names}}')
@@ -41,13 +41,13 @@ if [ -z "$CONTAINER_EXISTS" ]; then
           -w /workspace \
           agent-container:latest
 
-    docker cp "${AGENT_CONTAINERS_HOME}/settings.json" "${PROJECT_NAME}:/root/.pi/agent/"
+    docker cp "${AGENT_CONTAINER_RESOURCES}/settings.json" "${PROJECT_NAME}:/root/.pi/agent/"
 fi
 
 # Start the container (creates if not exists above, reuses if it does)
 docker start "${PROJECT_NAME}" 2>/dev/null || true
-docker cp "${AGENT_CONTAINERS_HOME}/AGENTS.md" "${PROJECT_NAME}:/root/.pi/agent/"
-docker cp "${AGENT_CONTAINERS_HOME}/models.json" "${PROJECT_NAME}:/root/.pi/agent/"
+docker cp "${AGENT_CONTAINER_RESOURCES}/AGENTS.md" "${PROJECT_NAME}:/root/.pi/agent/"
+docker cp "${AGENT_CONTAINER_RESOURCES}/models.json" "${PROJECT_NAME}:/root/.pi/agent/"
 
 docker exec -it "${PROJECT_NAME}" bash
 docker stop "${PROJECT_NAME}" 2>/dev/null || true
