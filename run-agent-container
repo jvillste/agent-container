@@ -49,5 +49,12 @@ docker start "${PROJECT_NAME}" 2>/dev/null || true
 docker cp "${AGENT_CONTAINER_RESOURCES}/AGENTS.md" "${PROJECT_NAME}:/root/.pi/agent/"
 docker cp "${AGENT_CONTAINER_RESOURCES}/models.json" "${PROJECT_NAME}:/root/.pi/agent/"
 
-docker exec -it "${PROJECT_NAME}" bash
+# Copy all skill directories into the container
+for skill in "${AGENT_CONTAINER_RESOURCES}/skills/"*; do
+    [ -e "$skill" ] || continue
+    skill_name="$(basename "$skill")"
+    docker cp "$skill" "${PROJECT_NAME}:/root/.pi/agent/skills/${skill_name}"
+done
+
+docker exec -it --detach-keys="ctrl-z,z" "${PROJECT_NAME}" bash
 docker stop "${PROJECT_NAME}" 2>/dev/null || true
