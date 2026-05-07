@@ -71,6 +71,10 @@ RUN git config --global user.email "juvi@iki.fi"
 
 ENV EDITOR=emacs
 
+# install clj-kondo
+
+RUN cd /root && curl -sLO https://raw.githubusercontent.com/clj-kondo/clj-kondo/master/script/install-clj-kondo && chmod +x install-clj-kondo && ./install-clj-kondo
+
 # install clojure surgeon
 RUN cd /root && git clone https://github.com/realgenekim/clj-surgeon.git && cd clj-surgeon && mkdir -p ~/bin && make install
 RUN echo 'export PATH="$PATH:$HOME/bin"' >> /root/.bashrc
