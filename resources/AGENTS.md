@@ -89,3 +89,6 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
   foo]))
 - remember that functions that call other functions must come after
   the called functions in the namespace
+- Use let to introduce local bindings only when the binding is used
+  more than once in the body. Do not give names to values only to
+  document their meaning.
