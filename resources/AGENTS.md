@@ -92,3 +92,5 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - Use let to introduce local bindings only when the binding is used
   more than once in the body. Do not give names to values only to
   document their meaning.
+- in lein based projects, run only the relevant test with "lein test
+  :only some-namespace/some-test"
