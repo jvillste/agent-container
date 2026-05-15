@@ -1,12 +1,5 @@
 set -x
 
-NO_NETWORK=false
-for arg in "$@"; do
-    case "$arg" in
-        --no-network) NO_NETWORK=true ;;
-    esac
-done
-
 PROJECT_NAME="$(basename "$(pwd)")"
 AGENT_CONTAINER_RESOURCES="${HOME}/agent-container-resources"
 
@@ -14,14 +7,7 @@ AGENT_CONTAINER_RESOURCES="${HOME}/agent-container-resources"
 CONTAINER_EXISTS=$(docker ps -a --filter "name=^${PROJECT_NAME}$" --format '{{.Names}}')
 
 if [ -z "$CONTAINER_EXISTS" ]; then
-    # First run: create the container (does not start it)
-    DOCKER_CREATE_ARGS=(
-        --name "${PROJECT_NAME}"
-    )
-    if [ "$NO_NETWORK" = true ]; then
-        DOCKER_CREATE_ARGS+=(--network=none)
-    fi
-    docker create "${DOCKER_CREATE_ARGS[@]}" \
+    docker create --name "${PROJECT_NAME}" \
           --cap-drop=ALL \
           --cap-add=CHOWN \
           --cap-add=DAC_OVERRIDE \
