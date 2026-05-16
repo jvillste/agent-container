@@ -108,9 +108,13 @@
 (defn bash []
   (process/shell (str "docker exec -it --detach-keys='ctrl-z,z' " (container-name) " bash")))
 
+(defn container-name-command {:command-name "container-name"} []
+  (println (container-name)))
+
 (def commands [#'run
                #'remove-container
-               #'bash])
+               #'bash
+               #'container-name-command])
 
 (defn command-name [command-var]
   (or (:command-name (meta command-var))
