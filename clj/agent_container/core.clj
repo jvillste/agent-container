@@ -1,6 +1,7 @@
 (ns agent-container.core
   (:require [babashka.process :as process]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [clojure.test :refer [deftest is]])
   (:import [java.io File]))
 
 (defn basename [path]
@@ -16,10 +17,40 @@
 (defn get-password [key-name]
   (:out (process/shell {:out :string} (str "security find-generic-password -s " key-name " -a " key-name " -w"))))
 
-(defn run []
+(defn- mount-pairs [run-arguments]
+  (loop [remaining-arguments run-arguments
+         pairs []
+         expecting-mount? false]
+    (if (empty? remaining-arguments)
+      pairs
+      (let [arg (first remaining-arguments)]
+        (if (= arg "--mount")
+          (recur (rest remaining-arguments) pairs true)
+          (recur (rest remaining-arguments)
+                 (if expecting-mount?
+                   (do (assert (string/includes? arg ":"))
+                       (conj pairs arg))
+                   pairs)
+                 false))))))
+
+(defn- volume-flags [run-arguments]
+  (->> (mount-pairs run-arguments)
+       (map #(str "-v \"" % "\""))
+       (string/join " ")))
+
+(deftest test-volume-flags
+  (is (= "-v \"/a:/b\"" (volume-flags ["--mount" "/a:/b"])))
+  (is (= "-v \"/a:/b\" -v \"/c:/d\"" (volume-flags ["--mount" "/a:/b" "--mount" "/c:/d"])))
+  (is (= "" (volume-flags [])))
+  (is (= "" (volume-flags ["--something" "/a:/b"])))
+  (is (= "" (volume-flags ["--mount"])))
+  (is (= "" (volume-flags ["--mount" "no-colon"]))))
+
+(defn run [& arguments]
   (let [current-working-directory (current-working-directory)
         container-name (basename current-working-directory)
         resources-dir (str (System/getenv "HOME") "/agent-container-resources")
+        extra-volumes (volume-flags arguments)
         container-exists? (not (empty? (:out (process/shell {:out :string :exit? true}
                                                             (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name)))))]
     (when-not container-exists?
@@ -44,10 +75,12 @@
                               -e JUKKA_HUGGINGFACE_API_KEY=\"$(security find-generic-password -s jukka-huggingface-api-key -a jukka-huggingface-api-key -w)\"
                               -e JUKKA_OPENROUTER_API_KEY=\"$(security find-generic-password -s jukka-openrouter-api-key -a jukka-openrouter-api-key -w)\"
                               -v \"%s:/workspace\"
+                              %s
                               -w /workspace
                               agent-container:latest")
                       container-name
-                      current-working-directory))
+                      current-working-directory
+                      extra-volumes))
 
       (process/shell (format "docker cp %s/settings.json %s:/root/.pi/agent/" resources-dir container-name)))
 
