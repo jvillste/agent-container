@@ -13,12 +13,12 @@ done
 
 ORIGINAL_DIR=$(pwd)
 
-cd $( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+cd "$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 CLASSPATH=$(clojure -Spath)
 
-# Replace leading "." with the absolute path to deps.edn directory
-CLASSPATH=$(echo "$CLASSPATH" | sed "s|^\.|$(pwd)|")
+# Replace leading "clj" with the absolute path to deps.edn directory
+CLASSPATH=$(echo "$CLASSPATH" | sed "s|^\clj|$(pwd)/clj|")
 
 cd "$ORIGINAL_DIR"
 
