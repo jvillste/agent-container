@@ -76,7 +76,7 @@
                               -e TAVILY_API_KEY=\"$(security find-generic-password -s travily-api-key -a travily-api-key -w)\"
                               -e JUKKA_OPENAI_API_KEY=\"" (get-password "jukka-openai-api-key") "\"
                               -e JUKKA_HUGGINGFACE_API_KEY=\"$(security find-generic-password -s jukka-huggingface-api-key -a jukka-huggingface-api-key -w)\"
-                              -e JUKKA_OPENROUTER_API_KEY=\"$(security find-generic-password -s jukka-openrouter-api-key -a jukka-openrouter-api-key -w)\"
+                              -e JUKKA_OPENROUTER_API_KEY=\"" (get-password "jukka-openrouter-api-key") "\"
                               -v \"%s:/workspace\"
                               %s
                               -w /workspace
