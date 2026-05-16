@@ -13,6 +13,9 @@
 (defn container-name []
   (basename (current-working-directory)))
 
+(defn get-password [key-name]
+  (:out (process/shell {:out :string} (str "security find-generic-password -s " key-name " -a " key-name " -w"))))
+
 (defn run []
   (let [current-working-directory (current-working-directory)
         container-name (basename current-working-directory)
@@ -23,7 +26,7 @@
       (println "creating container" container-name)
       (process/shell {:inherit? true}
                      (format
-                      "docker create
+                      (str "docker create
                               --name %s
                               --cap-drop=ALL
                               --cap-add=CHOWN
@@ -37,12 +40,12 @@
                               --memory=16g
                               --pids-limit=512
                               -e TAVILY_API_KEY=\"$(security find-generic-password -s travily-api-key -a travily-api-key -w)\"
-                              -e JUKKA_OPENAI_API_KEY=\"$(security find-generic-password -s jukka-openai-api-key -a jukka-openai-api-key -w)\"
+                              -e JUKKA_OPENAI_API_KEY=\"" (get-password "jukka-openai-api-key") "\"
                               -e JUKKA_HUGGINGFACE_API_KEY=\"$(security find-generic-password -s jukka-huggingface-api-key -a jukka-huggingface-api-key -w)\"
                               -e JUKKA_OPENROUTER_API_KEY=\"$(security find-generic-password -s jukka-openrouter-api-key -a jukka-openrouter-api-key -w)\"
                               -v \"%s:/workspace\"
                               -w /workspace
-                              agent-container:latest"
+                              agent-container:latest")
                       container-name
                       current-working-directory))
 
