@@ -22,13 +22,16 @@
          pairs []
          expecting-mount? false]
     (if (empty? remaining-arguments)
-      pairs
+      (do (assert (not expecting-mount?)
+                  "--mount requires a mount path")
+          pairs)
       (let [arg (first remaining-arguments)]
         (if (= arg "--mount")
           (recur (rest remaining-arguments) pairs true)
           (recur (rest remaining-arguments)
                  (if expecting-mount?
-                   (do (assert (string/includes? arg ":"))
+                   (do (assert (string/includes? arg ":")
+                               "--mount must follow with a mount pair separated with a colon")
                        (conj pairs arg))
                    pairs)
                  false))))))
@@ -43,8 +46,8 @@
   (is (= "-v \"/a:/b\" -v \"/c:/d\"" (volume-flags ["--mount" "/a:/b" "--mount" "/c:/d"])))
   (is (= "" (volume-flags [])))
   (is (= "" (volume-flags ["--something" "/a:/b"])))
-  (is (= "" (volume-flags ["--mount"])))
-  (is (= "" (volume-flags ["--mount" "no-colon"]))))
+  (is (thrown? AssertionError (volume-flags ["--mount"])))
+  (is (thrown? AssertionError (volume-flags ["--mount" "no-colon"]))))
 
 (defn run [& arguments]
   (let [current-working-directory (current-working-directory)
