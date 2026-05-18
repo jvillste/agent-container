@@ -1,0 +1,2 @@
+{:paths ["clj"]
+ :deps {babashka/process {:mvn/version "0.6.25"}}}
