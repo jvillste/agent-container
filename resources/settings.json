@@ -1,6 +1,6 @@
 {
   "defaultProvider": "omlx",
-  "defaultModel": "Qwen3.6-35B-A3B-MLX-8bit",
+  "defaultModel": "Qwen3.6-35B-A3B-UD-MLX-4bit",
   "defaultThinkingLevel": "medium",
   "enabledModels": [
     "jukka-openai/gpt-5.4-mini",
