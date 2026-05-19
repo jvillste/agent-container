@@ -10,6 +10,7 @@
     "Qwen3.6-35B-A3B-UD-MLX-4bit",
     "Qwen3.6-27B-MLX-8bit",
     "Qwen3.6-27B-UD-MLX-4bit",
-    "z-ai/glm-5.1"
+    "z-ai/glm-5.1",
+    "x-ai/grok-4.3"
   ]
 }

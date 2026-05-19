@@ -19,6 +19,21 @@
         }
       ]
     },
+    "xai": {
+      "baseUrl": "https://api.x.ai",
+      "api": "openai-completions",
+      "apiKey": "!echo $XAI_API_KEY",
+      "models": [
+        {
+          "id": "x-ai/grok-4.3",
+          "name": "x-ai/grok-4.3",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 1000000,
+          "maxTokens": 32000
+        }
+      ]
+    },
     "huggingface": {
       "baseUrl": "https://router.huggingface.co/v1",
       "api": "openai-completions",
