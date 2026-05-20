@@ -59,6 +59,11 @@
       ]
     },
     "openrouter": {
+      "compat": {
+        "openRouterRouting": {
+          "sort": { "by": "price" }
+        }
+      },
       "baseUrl": "https://openrouter.ai/api/v1",
       "api": "openai-completions",
       "apiKey": "!echo $JUKKA_OPENROUTER_API_KEY"
