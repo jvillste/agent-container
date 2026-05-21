@@ -1,8 +1,11 @@
 (ns agent-container.core
-  (:require [babashka.process :as process]
-            [clojure.string :as string]
-            [clojure.test :refer [deftest is]])
-  (:import [java.io File]))
+  (:require
+   [babashka.process :as process]
+   [clojure.edn :as edn]
+   [clojure.string :as string]
+   [clojure.test :refer [deftest is]])
+  (:import
+   [java.io File]))
 
 (defn basename [path]
   (let [parts (string/split path #"/")]
@@ -17,43 +20,25 @@
 (defn get-password [key-name]
   (:out (process/shell {:out :string} (str "security find-generic-password -s " key-name " -a " key-name " -w"))))
 
-(defn- mount-pairs [run-arguments]
-  (loop [remaining-arguments run-arguments
-         pairs []
-         expecting-mount? false]
-    (if (empty? remaining-arguments)
-      (do (assert (not expecting-mount?)
-                  "--mount requires a mount path")
-          pairs)
-      (let [arg (first remaining-arguments)]
-        (if (= arg "--mount")
-          (recur (rest remaining-arguments) pairs true)
-          (recur (rest remaining-arguments)
-                 (if expecting-mount?
-                   (do (assert (string/includes? arg ":")
-                               "--mount must follow with a mount pair separated with a colon")
-                       (conj pairs arg))
-                   pairs)
-                 false))))))
-
-(defn- volume-flags [run-arguments]
-  (->> (mount-pairs run-arguments)
-       (map #(str "-v \"" % "\""))
+(defn- volume-flags [volumes]
+  (assert (even? (count volumes))
+          "Volumes must be pairs of host-path and container-path")
+  (->> volumes
+       (partition 2)
+       (map (fn [[host-path container-path]]
+              (str "-v \"" host-path ":" container-path "\"")))
        (string/join " ")))
 
 (deftest test-volume-flags
-  (is (= "-v \"/a:/b\"" (volume-flags ["--mount" "/a:/b"])))
-  (is (= "-v \"/a:/b\" -v \"/c:/d\"" (volume-flags ["--mount" "/a:/b" "--mount" "/c:/d"])))
+  (is (= "-v \"/a:/b\"" (volume-flags ["/a" "/b"])))
+  (is (= "-v \"/a:/b\" -v \"/c:/d\"" (volume-flags ["/a" "/b" "/c" "/d"])))
   (is (= "" (volume-flags [])))
-  (is (= "" (volume-flags ["--something" "/a:/b"])))
-  (is (thrown? AssertionError (volume-flags ["--mount"])))
-  (is (thrown? AssertionError (volume-flags ["--mount" "no-colon"]))))
+  (is (thrown? AssertionError (volume-flags ["/a"]))))
 
 (defn run [& arguments]
   (let [current-working-directory (current-working-directory)
         container-name (basename current-working-directory)
         resources-dir (str (System/getenv "HOME") "/agent-container-resources")
-        extra-volumes (volume-flags arguments)
         container-exists? (not (empty? (:out (process/shell {:out :string :exit? true}
                                                             (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name)))))]
     (when-not container-exists?
@@ -84,7 +69,7 @@
                               agent-container:latest")
                       container-name
                       current-working-directory
-                      extra-volumes))
+                      (volume-flags (:volumes (edn/read-string (first arguments))))))
 
       (process/shell (format "docker cp %s/settings.json %s:/root/.pi/agent/" resources-dir container-name)))
 
