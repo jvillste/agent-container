@@ -14,8 +14,20 @@
 (defn- current-working-directory []
   (System/getProperty "user.dir"))
 
+(defn basename-to-container-name [basename]
+  (-> basename
+      (string/lower-case)
+      (string/replace #"^\." "")
+      (string/replace #"[^a-z\-0-9]" "-")))
+
+(deftest test-basename-to-container-name
+  (is (= "emacs-d"
+         (basename-to-container-name ".emacs-d"))))
+
 (defn container-name []
-  (basename (current-working-directory)))
+  (-> (current-working-directory)
+      (basename)
+      (basename-to-container-name)))
 
 (defn get-password [key-name]
   (:out (process/shell {:out :string} (str "security find-generic-password -s " key-name " -a " key-name " -w"))))
@@ -37,7 +49,7 @@
 
 (defn run [& arguments]
   (let [current-working-directory (current-working-directory)
-        container-name (basename current-working-directory)
+        container-name (container-name)
         resources-dir (str (System/getenv "HOME") "/agent-container-resources")
         container-exists? (not (empty? (:out (process/shell {:out :string :exit? true}
                                                             (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name)))))]
