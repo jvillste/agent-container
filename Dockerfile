@@ -34,7 +34,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource_setup.sh
 # Install PI
 RUN npm install -g yarn
 RUN curl -fsSL https://pi.dev/install.sh | sh
-RUN pi install npm:pi-tavily-tools
 
 # Install Clojure CLI
 RUN curl -L -O https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh \
@@ -57,6 +56,9 @@ RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 USER root
 WORKDIR /workspace
+
+# install tavily tools fro pi
+RUN pi install npm:pi-tavily-tools
 
 # install bbin
 RUN mkdir -p ~/.local/bin && curl -o- -L https://raw.githubusercontent.com/babashka/bbin/v0.2.5/bbin > ~/.local/bin/bbin && chmod +x ~/.local/bin/bbin
