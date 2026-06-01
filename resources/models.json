@@ -97,6 +97,18 @@
       "apiKey": "pwmvriojc58jfgfd",
       "models": [
         {
+          "id": "gemma-4-26B-A4B-it-MLX-8bit",
+          "contextWindow": 250000,
+          "reasoning": true,
+          "input": ["text", "image"]
+        },
+        {
+          "id": "gemma-4-31B-it-MLX-8bit",
+          "contextWindow": 250000,
+          "reasoning": true,
+          "input": ["text", "image"]
+        },
+        {
           "id": "Qwen3.6-35B-A3B-MLX-8bit",
           "contextWindow": 250000,
           "reasoning": true,
