@@ -31,8 +31,10 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource_setup.sh
     && rm -f /tmp/nodesource_setup.sh \
     && rm -rf /var/lib/apt/lists/*
 
+# Install PI
 RUN npm install -g yarn
 RUN curl -fsSL https://pi.dev/install.sh | sh
+RUN pi install npm:pi-tavily-tools
 
 # Install Clojure CLI
 RUN curl -L -O https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh \
