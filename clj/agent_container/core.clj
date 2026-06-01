@@ -30,7 +30,10 @@
       (basename-to-container-name)))
 
 (defn get-password [key-name]
-  (:out (process/shell {:out :string} (str "security find-generic-password -s " key-name " -a " key-name " -w"))))
+  (try
+    (:out (process/shell {:out :string} (str "security find-generic-password -s " key-name " -a " key-name " -w")))
+    (catch Throwable _throwable
+      "")))
 
 (defn- volume-flags [volumes]
   (assert (even? (count volumes))
