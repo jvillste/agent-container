@@ -84,9 +84,7 @@
                               agent-container:latest")
                       container-name
                       current-working-directory
-                      (volume-flags (:volumes (edn/read-string (first arguments))))))
-
-      (process/shell (format "docker cp %s/settings.json %s:/root/.pi/agent/" resources-dir container-name)))
+                      (volume-flags (:volumes (edn/read-string (first arguments)))))))
 
     (process/shell (format "docker start %s" container-name))
     (process/shell (format "docker cp %s/AGENTS.md %s:/root/.pi/agent/" resources-dir container-name))
