@@ -57,8 +57,9 @@ RUN ln -sf /usr/bin/python3 /usr/bin/python
 USER root
 WORKDIR /workspace
 
-# install tavily tools fro pi
+# install pi extensions
 RUN pi install npm:pi-tavily-tools
+RUN pi install npm:pi-hashline-edit
 
 # install bbin
 RUN mkdir -p ~/.local/bin && curl -o- -L https://raw.githubusercontent.com/babashka/bbin/v0.2.5/bbin > ~/.local/bin/bbin && chmod +x ~/.local/bin/bbin
