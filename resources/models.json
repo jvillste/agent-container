@@ -34,30 +34,6 @@
         }
       ]
     },
-    "huggingface": {
-      "baseUrl": "https://router.huggingface.co/v1",
-      "api": "openai-completions",
-      "apiKey": "!echo $JUKKA_HUGGINGFACE_API_KEY",
-      "models": [
-        {
-          "id": "openai/gpt-oss-120b:novita",
-          "name": "openai/gpt-oss-120b:novita",
-          "reasoning": true,
-          "input": ["text"],
-          "contextWindow": 128000,
-          "maxTokens": 32000,
-          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
-        },
-        {
-          "id": "Qwen/Qwen3-Coder-Next:novita",
-          "contextWindow": 256000
-        },
-        {
-          "id": "google/gemma-4-31B-it",
-          "contextWindow": 256000
-        }
-      ]
-    },
     "openrouter": {
       "compat": {
         "openRouterRouting": {

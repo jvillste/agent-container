@@ -74,7 +74,6 @@
                               --pids-limit=512
                               -e TAVILY_API_KEY=\"" (get-password "tavily-api-key") "\"
                               -e JUKKA_OPENAI_API_KEY=\"" (get-password "jukka-openai-api-key") "\"
-                              -e JUKKA_HUGGINGFACE_API_KEY=\"$(security find-generic-password -s jukka-huggingface-api-key -a jukka-huggingface-api-key -w)\"
                               -e JUKKA_OPENROUTER_API_KEY=\"" (get-password "jukka-openrouter-api-key") "\"
                               -e XAI_API_KEY=\"" (get-password "xai-api-key") "\"
                               -v \"%s:/workspace\"
