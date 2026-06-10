@@ -6,13 +6,13 @@
       "apiKey": "!echo $JUKKA_OPENAI_API_KEY",
       "models": [
         {
-          "id": "gpt-5.4",
+          "id": "gpt-5.5",
           "reasoning": true,
           "input": ["text", "image"],
           "contextWindow": 256000
         },
         {
-          "id": "gpt-5.4-mini",
+          "id": "gpt-5.5-mini",
           "reasoning": true,
           "input": ["text", "image"],
           "contextWindow": 256000
@@ -96,6 +96,12 @@
       "api": "openai-completions",
       "apiKey": "pwmvriojc58jfgfd",
       "models": [
+        {
+          "id": "Qwen3.6-27B-oQ4-mtp",
+          "contextWindow": 250000,
+          "reasoning": true,
+          "input": ["text", "image"]
+        },
         {
           "id": "gemma-4-26B-A4B-it-MLX-8bit",
           "contextWindow": 250000,
