@@ -51,12 +51,11 @@
   (is (thrown? AssertionError (volume-flags ["/a"]))))
 
 (defn run [& arguments]
-  (let [current-working-directory (current-working-directory)
-        container-name (container-name)
-        resources-dir (str (System/getenv "HOME") "/agent-container-resources")
-        container-exists? (not (empty? (:out (process/shell {:out :string :exit? true}
-                                                            (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name)))))]
-    (when-not container-exists?
+  (let [container-name (container-name)
+        resources-dir (str (System/getenv "HOME") "/agent-container-resources")]
+
+    (when-not (not (empty? (:out (process/shell {:out :string :exit? true}
+                                                (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name)))))
       (println "creating container" container-name)
       (process/shell {:inherit? true}
                      (format
@@ -83,7 +82,7 @@
                               -w /workspace
                               agent-container:latest")
                       container-name
-                      current-working-directory
+                      (current-working-directory)
                       (volume-flags (:volumes (edn/read-string (first arguments)))))))
 
     (process/shell (format "docker start %s" container-name))
