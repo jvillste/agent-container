@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     openjdk-21-jdk \
     emacs-nox \
     curl \
+    iptables \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 22 from NodeSource
