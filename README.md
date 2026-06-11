@@ -3,7 +3,7 @@
 Command line tools for running the pi coding agent in a docker
 container.
 
-# installataion
+# installation
 
 Run build.sh to build the container image.
 
