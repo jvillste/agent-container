@@ -79,7 +79,7 @@ bash: ([])
 restrict-network: ([& allowed-addresses])
 
   Creates firewall rules to the running containers network namespace
-  that only allow connections to the given domain port pairs.  for
+  that only allow connections to the given domain port pairs. for
   example to allow access to the local omlx server, include
   host.docker.internal:8888
 ------------------------
@@ -94,6 +94,13 @@ container-name: ([])
 ------------------------
 deploy: ([])
 
-  Creates a symlink in ~/bin/agent-contaienr pointing to the
+ Creates a symlink in ~/bin/agent-contaienr pointing to the
   agent-container script in this directory and copies default
-  configuration files into ~/.config.
+  configuration files into ~/.config. Must be run in the
+  agent-container source directory.
+------------------------
+build: ([])
+
+ Build the container image and copy
+  ~/.config/agent-container/settings.json into it. Must be run in the
+  agent-container source directory.
