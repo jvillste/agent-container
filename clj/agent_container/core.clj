@@ -48,8 +48,10 @@
 (defn run
   "  Runs the agent container. Optionally give arguments as an edn map.
 
-  The only supported parameter is :volumes, which must be a vector of source and target paths to be mounted to the container when it is created.
-  Note that if the container already exists, it must be removed before the volumes can be mounted.
+  The only supported parameter is :volumes, which must be a vector of
+  source and target paths to be mounted to the container when it is
+  created.  Note that if the container already exists, it must be
+  removed before the volumes can be mounted.
 
   an example:
   \"{:volumes [\\\"./resources\\\" \"/resources\"]}\""
@@ -119,9 +121,22 @@
   (when (not (fs/exists? target-path))
     (fs/copy source-path target-path)))
 
+(defn build
+  " Build the container image and copy
+  ~/.config/agent-container/settings.json into it. Must be run in the
+  agent-container source directory."
+  []
+  (fs/create-dirs "temp")
+  (fs/copy (str (System/getenv "HOME") "/.config/agent-container/settings.json")
+           "temp/user-settings.json")
+  (process/shell {:inherit? true}
+                 "docker build -t agent-container:latest ."))
+
 (defn deploy
-  "  Creates a symlink in ~/bin/agent-contaienr pointing to the agent-container script in this directory
-  and copies default configuration files into ~/.config"
+  " Creates a symlink in ~/bin/agent-contaienr pointing to the
+  agent-container script in this directory and copies default
+  configuration files into ~/.config. Must be run in the
+  agent-container source directory."
   []
   (let [home-directory (System/getenv "HOME")
         source-directory (System/getenv "SOURCE_DIRECTORY")]
@@ -151,7 +166,8 @@
                #'network/restrict-network
                #'network/unrestrict-network
                #'container-name-command
-               #'deploy])
+               #'deploy
+               #'build])
 
 (defn command-name [command-var]
   (or (:command-name (meta command-var))

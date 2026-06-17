@@ -12,18 +12,22 @@ This is a cli to run the pi coding agent in a docker container on in macos.
 
 # Installation
 
-Run `build.sh` to build the container. This can be repeated to update
-pi and other tools installed to the container.
-
 Run `./agent-contaienr deploy` to create a symbolic link to
 `~/bin/agent-container` and copy default configuration files to
 `~/.config/agent-container`. Later on you can edit the configuration
 files in `~/.config/agent-container` and they will be copied from there
 to the container every time it is started.
 
+Run `./agent-contaienr deploy` to build the container image. This can be repeated to
+update pi and other tools installed in the
+container. `~/.config/agent-container/settings.json` is copied to the
+image. This must be done at build time, since `pi install` calls later
+in Dockerfile modify settings.json afterwards. Thus, if you want to
+modify your default settings, you need to build the image again.
+
 Because `~/bin/agent-container` refers to the this source code
-directory, the source code can be edited and the will be are in effect
-without new deployment.
+directory, the source code can be edited and the changes will be in
+effect without new deployment.
 
 `~/.config/agent-container/configuration.edn` lists api key
 names. Each name should correspond to password in the mac

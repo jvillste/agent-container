@@ -1,4 +1,5 @@
 FROM ubuntu:24.04
+ARG HOME_DIR
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
@@ -35,7 +36,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource_setup.sh
 # Install PI
 RUN npm install -g yarn
 RUN curl -fsSL https://pi.dev/install.sh | sh
-COPY ~/.config/agent-container/settings.json /root/.pi/agent/
+COPY temp/user-settings.json /root/.pi/agent/settings.json
 
 # Install Clojure CLI
 RUN curl -L -O https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh \
