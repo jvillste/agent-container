@@ -1,14 +1,12 @@
 # agent container
 
-Command line tools for running the pi coding agent in a docker
-container.
+Command line tools for running the Pi coding agent in a Docker
+container on macos. The advantages of doing this are:
 
-# installation
-
-Run build.sh to build the container image.
-# agent-container
-
-This is a cli to run the pi coding agent in a docker container on in macos.
+- Pi is run as a root and can install new software and libraries when
+  it needs without making changes to the developers own machine.
+- There is no need to make Pi ask the user permission to use any tools.
+- Pi agents network access can be restricted to only given domains.
 
 # Installation
 
@@ -52,7 +50,9 @@ Run `agent-container` to get list of commands.
 
 Each container is identified by the name of the directory where the
 container is started. The commands target the container corresponding
-to the current directory.
+to the current directory. The current directory is mounted as
+`/workspace` in the container, so you can work with the same files as
+pi.
 
 The commands are:
 
