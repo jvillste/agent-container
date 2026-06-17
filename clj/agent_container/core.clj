@@ -44,10 +44,10 @@
         resources-dir (str (System/getenv "SOURCE_DIRECTORY") "/resources")]
     (if (empty? (:out (process/shell {:out :string :exit? true}
                                      (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name))))
-      (do(println "creating container" container-name)
-         (process/shell {:inherit? true}
-                        (format
-                         (str "docker create
+      (do (println "creating container" container-name)
+          (process/shell {:inherit? true}
+                         (format
+                          (str "docker create
                               --name %s
                               --cap-drop=ALL
                               --cap-add=CHOWN
@@ -68,9 +68,9 @@
                               %s
                               -w /workspace
                               agent-container:latest")
-                         container-name
-                         (docker/current-working-directory)
-                         (volume-flags (:volumes arguments)))))
+                          container-name
+                          (docker/current-working-directory)
+                          (volume-flags (:volumes arguments)))))
       (when (:volumes arguments)
         (println "The container must be removed before mounting volumes.")
         (System/exit 1)))
