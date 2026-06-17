@@ -190,6 +190,6 @@
                                          (:arglists (meta command-var))
                                          (when-let [doc (:doc (meta command-var))]
                                            (str "\n\n" doc)))))
-                             (string/join "\n------------------------\n"))))))
+                             (string/join "\n\n"))))))
        (finally (.flush *out*)
                 (shutdown-agents))))
