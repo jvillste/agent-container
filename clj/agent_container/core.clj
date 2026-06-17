@@ -185,7 +185,7 @@
                (println "------------------------")
                (println (->> commands
                              (map (fn [command-var]
-                                    (str (command-name command-var)
+                                    (str "## "(command-name command-var)
                                          ": "
                                          (:arglists (meta command-var))
                                          (when-let [doc (:doc (meta command-var))]

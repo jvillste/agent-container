@@ -56,7 +56,7 @@ to the current directory.
 
 The commands are:
 
-run: ([& [arguments-edn]])
+## run: ([& [arguments-edn]])
 
   Runs the agent container. Optionally give arguments as an edn map.
 
@@ -68,38 +68,38 @@ run: ([& [arguments-edn]])
   an example:
   "{:volumes [\"./resources\" "/resources"]}"
 
-remove: ([])
+## remove: ([])
 
   Removes the Docker container.
 
-bash: ([])
+## bash: ([])
 
   start bash shell in the running container
 
-restrict-network: ([& allowed-addresses])
+## restrict-network: ([& allowed-addresses])
 
   Creates firewall rules to the running containers network namespace
   that only allow connections to the given domain port pairs. for
   example to allow access to the local omlx server, include
   host.docker.internal:8888
 
-unrestrict-network: ([])
+## unrestrict-network: ([])
 
   Remove firewall rules.
 
-container-name: ([])
+## container-name: ([])
 
   Prints the name of the docker container corresponding to this
   directory.
 
-deploy: ([])
+## deploy: ([])
 
  Creates a symlink in ~/bin/agent-contaienr pointing to the
   agent-container script in this directory and copies default
   configuration files into ~/.config. Must be run in the
   agent-container source directory.
 
-build: ([])
+## build: ([])
 
  Build the container image and copy
   ~/.config/agent-container/settings.json into it. Must be run in the
