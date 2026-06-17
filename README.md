@@ -1,7 +1,8 @@
 # agent container
 
-Command line tools for running the Pi coding agent in a Docker
-container on macos. The advantages of doing this are:
+This repository provides command line tools for running the Pi coding
+agent in a Docker container on macos. The advantages of doing this
+are:
 
 - Pi is run as a root and can install new software and libraries when
   it needs without making changes to the developers own machine.
