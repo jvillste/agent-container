@@ -35,7 +35,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource_setup.sh
 # Install PI
 RUN npm install -g yarn
 RUN curl -fsSL https://pi.dev/install.sh | sh
-COPY resources/settings.json /root/.pi/agent/
+COPY ~/.config/agent-container/settings.json /root/.pi/agent/
 
 # Install Clojure CLI
 RUN curl -L -O https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh \

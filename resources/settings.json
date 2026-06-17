@@ -3,9 +3,6 @@
   "defaultModel": "Qwen3.6-27B-oQ4-mtp",
   "defaultThinkingLevel": "medium",
   "enabledModels": [
-    "Qwen3.6-27B-oQ4-mtp",
-    "jukka-openai/gpt-5.5",
-    "Qwen3.6-35B-A3B-MLX-8bit",
-    "Qwen3.6-35B-A3B-UD-MLX-4bit"
+    "mlx/Qwen3.6-27B-oQ4-mtp"
   ]
 }

@@ -2,6 +2,7 @@
   (:require
    [agent-container.docker :as docker]
    [agent-container.network :as network]
+   [babashka.fs :as fs]
    [babashka.process :as process]
    [clojure.edn :as edn]
    [clojure.string :as string]
@@ -30,9 +31,11 @@
   (is (= "" (volume-flags [])))
   (is (thrown? AssertionError (volume-flags ["/a"]))))
 
+(def configuration-directory (str (System/getenv "HOME")
+                                  "/.config/agent-container"))
+
 (defn configuration []
-  (-> (str (System/getenv "HOME")
-           "/.config/agent-container/configuration.edn")
+  (-> (str configuration-directory "/configuration.edn")
       (slurp)
       (edn/read-string)))
 
@@ -73,6 +76,7 @@
                               --memory=16g
                               --pids-limit=512
                               -v \"%s:/workspace\"
+                              -e TAVILY_API_KEY=\"" (get-password "tavily-api-key") "\"
                               %s
                               %s
                               -w /workspace
@@ -88,7 +92,7 @@
     (process/shell (format "docker start %s" container-name))
     (process/shell (format "docker cp %s/AGENTS.md %s:/root/.pi/agent/" resources-dir container-name))
     (process/shell (format "docker cp %s/pi-chat %s:/root/bin/" resources-dir container-name))
-    (process/shell (format "docker cp %s/models.json %s:/root/.pi/agent/" resources-dir container-name))
+    (process/shell (format "docker cp %s/models.json %s:/root/.pi/agent/" configuration-directory container-name))
     (doseq [skill-dir (.listFiles (File. (str resources-dir "/skills")))]
       (when (.isDirectory skill-dir)
         (process/shell (format "docker cp %s %s:/root/.pi/agent/skills/%s"
@@ -111,6 +115,30 @@
   []
   (process/shell (str "docker exec -it --detach-keys='ctrl-z,z' " (docker/container-name) " bash")))
 
+(defn copy-if-does-not-exists [source-path target-path]
+  (when (not (fs/exists? target-path))
+    (fs/copy source-path target-path)))
+
+(defn deploy
+  "  Creates a symlink in ~/bin/agent-contaienr pointing to the agent-container script in this directory
+  and copies default configuration files into ~/.config"
+  []
+  (let [home-directory (System/getenv "HOME")
+        source-directory (System/getenv "SOURCE_DIRECTORY")]
+    (process/shell {:inherit? true}
+                   (str "ln -sf "
+                        source-directory
+                        "/agent-container "
+                        home-directory
+                        "/bin/agent-container"))
+    (let [config-directory (str home-directory "/.config/agent-container")]
+      (fs/create-dirs config-directory)
+      (doseq [file ["configuration.edn" "models.json" "settings.json"]]
+        (copy-if-does-not-exists (str source-directory "/resources/" file)
+                                 (str config-directory "/" file))))
+
+    (println "Deployment ready.")))
+
 (defn container-name-command
   "  Prints the name of the docker container corresponding to this
   directory."
@@ -122,7 +150,8 @@
                #'bash
                #'network/restrict-network
                #'network/unrestrict-network
-               #'container-name-command])
+               #'container-name-command
+               #'deploy])
 
 (defn command-name [command-var]
   (or (:command-name (meta command-var))
