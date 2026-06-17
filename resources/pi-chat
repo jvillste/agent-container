@@ -1,0 +1,1 @@
+pi --no-context-files --no-tools --no-extensions --no-skills --system-prompt "You are a helpful assistant."
