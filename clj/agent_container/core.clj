@@ -30,6 +30,18 @@
   (is (= "" (volume-flags [])))
   (is (thrown? AssertionError (volume-flags ["/a"]))))
 
+(defn configuration []
+  (-> (str (System/getenv "HOME")
+           "/.config/agent-container/configuration.edn")
+      (slurp)
+      (edn/read-string)))
+
+(defn api-key-environment-value-flag [api-key-name]
+  (str "-e " (-> api-key-name
+                 (string/upper-case )
+                 (string/replace "-" "_"))
+       "=\"" (string/trim (get-password api-key-name)) "\""))
+
 (defn run
   "  Runs the agent container. Optionally give arguments as an edn map.
 
@@ -40,14 +52,14 @@
   \"{:volumes [\\\"./resources\\\" \"/resources\"]}\""
   [& [arguments-edn]]
   (let [arguments (edn/read-string arguments-edn)
+        configuration (configuration)
         container-name (docker/container-name)
         resources-dir (str (System/getenv "SOURCE_DIRECTORY") "/resources")]
     (if (empty? (:out (process/shell {:out :string :exit? true}
                                      (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name))))
       (do (println "creating container" container-name)
           (process/shell {:inherit? true}
-                         (format
-                          (str "docker create
+                         (format (str "docker create
                               --name %s
                               --cap-drop=ALL
                               --cap-add=CHOWN
@@ -60,17 +72,15 @@
                               --security-opt=no-new-privileges
                               --memory=16g
                               --pids-limit=512
-                              -e TAVILY_API_KEY=\"" (get-password "tavily-api-key") "\"
-                              -e JUKKA_OPENAI_API_KEY=\"" (get-password "jukka-openai-api-key") "\"
-                              -e JUKKA_OPENROUTER_API_KEY=\"" (get-password "jukka-openrouter-api-key") "\"
-                              -e XAI_API_KEY=\"" (get-password "xai-api-key") "\"
                               -v \"%s:/workspace\"
+                              %s
                               %s
                               -w /workspace
                               agent-container:latest")
-                          container-name
-                          (docker/current-working-directory)
-                          (volume-flags (:volumes arguments)))))
+                                 container-name
+                                 (docker/current-working-directory)
+                                 (volume-flags (:volumes arguments))
+                                 (string/join " " (map api-key-environment-value-flag (:api-key-names configuration))))))
       (when (:volumes arguments)
         (println "The container must be removed before mounting volumes.")
         (System/exit 1)))
