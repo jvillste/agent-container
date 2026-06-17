@@ -70,7 +70,7 @@
     "omlx": {
       "baseUrl": "http://host.docker.internal:8888/v1",
       "api": "openai-completions",
-      "apiKey": "pwmvriojc58jfgfd",
+      "apiKey": "!echo $OMLX_API_KEY",
       "models": [
         {
           "id": "Qwen3.6-27B-oQ4-mtp",
