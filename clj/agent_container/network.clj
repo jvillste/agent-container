@@ -212,13 +212,18 @@ rm -f /tmp/agent-container-hosts"
                                   (resolve-allowed-host host)
                                   port)))))
 
-(defn unrestrict-network {:command-name "unrestrict-network"} []
+(defn unrestrict-network
+  "  Remove firewall rules."
+  []
   (if (macos?)
     (do (namespace-unrestrict-network)
         (remove-host-entries))
     (unrestrict-network-on-linux-host)))
 
-(defn restrict-network {:command-name "restrict-network"} [& allowed-addresses]
+(defn restrict-network
+  "  Creates firewall rules to the running containers network namespace that only allow connections to the given domain port pairs.
+  for example to allow access to the local omlx server, include host.docker.internal:8888"
+  [& allowed-addresses]
   (assert (seq allowed-addresses)
           "Give at least one allowed address, for example: host.docker.internal:8888")
   (if (macos?)

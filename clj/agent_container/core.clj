@@ -91,13 +91,20 @@
 
     (process/shell (format "docker stop %s" container-name))))
 
-(defn remove-container {:command-name "remove"}[]
+(defn remove-container
+  "  Removes the Docker container."
+  {:command-name "remove"}[]
   (process/shell (str "docker rm " (docker/container-name))))
 
-(defn bash []
+(defn bash
+  "  start bash shell in the running container"
+  []
   (process/shell (str "docker exec -it --detach-keys='ctrl-z,z' " (docker/container-name) " bash")))
 
-(defn container-name-command {:command-name "container-name"} []
+(defn container-name-command
+  "  Prints the name of the docker container corresponding to this
+  directory."
+  {:command-name "container-name"} []
   (println (docker/container-name)))
 
 (def commands [#'run
@@ -127,7 +134,7 @@
                                          ": "
                                          (:arglists (meta command-var))
                                          (when-let [doc (:doc (meta command-var))]
-                                           (str "\n" doc)))))
+                                           (str "\n\n" doc)))))
                              (string/join "\n------------------------\n"))))))
        (finally (.flush *out*)
                 (shutdown-agents))))

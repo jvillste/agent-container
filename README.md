@@ -6,8 +6,16 @@ container.
 # installation
 
 Run build.sh to build the container image.
+# a cli to run the pi coding agent in a docker container
 
-Run deploy.sh to copy common resources to
-~/agent-container-resources and to create a symbolik link to ~/bin/agent-container.
 
-~/agent-container-resources contains files that are copied to containers when they start.
+
+Run build.sh to build the container.
+
+Run deploy.sh to create a symbolic link to ~/bin/agent-container.
+
+Run agent-container to get list of commands.
+
+Each container is identified by the name of the directory where the
+container is started. The commands target the container corresponding
+to the current directory.
