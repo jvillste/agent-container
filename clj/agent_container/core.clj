@@ -32,8 +32,7 @@
 
 (defn run [& arguments]
   (let [container-name (docker/container-name)
-        resources-dir (str (System/getenv "HOME") "/agent-container-resources")]
-
+        resources-dir (str (System/getenv "SOURCE_DIRECTORY") "/resources")]
     (when-not (not (empty? (:out (process/shell {:out :string :exit? true}
                                                 (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name)))))
       (println "creating container" container-name)

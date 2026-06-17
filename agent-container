@@ -15,6 +15,8 @@ ORIGINAL_DIR=$(pwd)
 
 cd "$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
+export SOURCE_DIRECTORY="$(pwd)"
+
 CLASSPATH=$(clojure -Spath)
 
 # Replace leading "clj" with the absolute path to deps.edn directory
