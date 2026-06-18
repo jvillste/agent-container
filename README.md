@@ -7,7 +7,8 @@ are:
 - Pi is run as a root and can install new software and libraries when
   it needs without making changes to the developers own machine.
 - There is no need to make Pi ask the user permission to use any tools.
-- Pi agents network access can be restricted to only given domains.
+- Pi agents network access can be denied, except for given IP
+  addresses.
 
 # Installation
 
@@ -81,14 +82,21 @@ The commands are:
 
 ## bash: ([])
 
-  start bash shell in the running container
+  Start bash shell in the running container.
 
 ## restrict-network: ([& allowed-addresses])
 
   Creates firewall rules to the running containers network namespace
   that only allow connections to the given domain port pairs. for
   example to allow access to the local omlx server, include
-  host.docker.internal:8888
+  host.docker.internal:8888.
+
+  The domain IP:s are resolved on the host and the traffic is
+  restricted on the IP level. The IPs are added to /etc/hosts in the
+  container, so DNS queries are not needed to access the domains. If
+  the domains change their IP, you will have to unrestrict, and
+  restrict the network again. If other domains point to the same IPs,
+  they will also be accessible from the container.
 
 ## unrestrict-network: ([])
 
@@ -101,13 +109,13 @@ The commands are:
 
 ## deploy: ([])
 
- Creates a symlink in ~/bin/agent-container pointing to the
+  Creates a symlink in ~/bin/agent-contaienr pointing to the
   agent-container script in this directory and copies default
   configuration files into ~/.config. Must be run in the
   agent-container source directory.
 
 ## build: ([])
 
- Build the container image and copy
+  Build the container image and copy
   ~/.config/agent-container/settings.json into it. Must be run in the
   agent-container source directory.

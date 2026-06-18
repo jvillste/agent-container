@@ -224,7 +224,14 @@ rm -f /tmp/agent-container-hosts"
   "  Creates firewall rules to the running containers network namespace
   that only allow connections to the given domain port pairs. for
   example to allow access to the local omlx server, include
-  host.docker.internal:8888"
+  host.docker.internal:8888.
+
+  The domain IP:s are resolved on the host and the traffic is
+  restricted on the IP level. The IPs are added to /etc/hosts in the
+  container, so DNS queries are not needed to access the domains. If
+  the domains change their IP, you will have to unrestrict, and
+  restrict the network again. If other domains point to the same IPs,
+  they will also be accessible from the container."
   [& allowed-addresses]
   (assert (seq allowed-addresses)
           "Give at least one allowed address, for example: host.docker.internal:8888")

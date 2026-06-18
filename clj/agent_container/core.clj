@@ -113,7 +113,7 @@
   (process/shell (str "docker rm " (docker/container-name))))
 
 (defn bash
-  "  start bash shell in the running container"
+  "  Start bash shell in the running container."
   []
   (process/shell (str "docker exec -it --detach-keys='ctrl-z,z' " (docker/container-name) " bash")))
 
@@ -122,7 +122,7 @@
     (fs/copy source-path target-path)))
 
 (defn build
-  " Build the container image and copy
+  "  Build the container image and copy
   ~/.config/agent-container/settings.json into it. Must be run in the
   agent-container source directory."
   []
@@ -133,7 +133,7 @@
                  "docker build -t agent-container:latest ."))
 
 (defn deploy
-  " Creates a symlink in ~/bin/agent-contaienr pointing to the
+  "  Creates a symlink in ~/bin/agent-contaienr pointing to the
   agent-container script in this directory and copies default
   configuration files into ~/.config. Must be run in the
   agent-container source directory."
