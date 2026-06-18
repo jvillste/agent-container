@@ -11,22 +11,23 @@ are:
 
 # Installation
 
-Run `./agent-contaienr deploy` to create a symbolic link to
+You must have Clojure and Docker installed in your system.
+
+Run `./agent-container deploy` to create a symbolic link to
 `~/bin/agent-container` and copy default configuration files to
 `~/.config/agent-container`. Later on you can edit the configuration
-files in `~/.config/agent-container` and they will be copied from there
-to the container every time it is started.
+files in `~/.config/agent-container` and they will be copied from
+there to the container every time it is started. Because
+`~/bin/agent-container` refers to the this source code directory, the
+source code can be edited and the changes will be in effect without
+new deployment.
 
-Run `./agent-contaienr deploy` to build the container image. This can
+Run `./agent-container deploy` to build the container image. This can
 be repeated to update pi and other tools installed in the
 container. `~/.config/agent-container/settings.json` is copied to the
 image. This must be done at build time, since `pi install` calls later
 in Dockerfile modify settings.json afterwards. Thus, if you want to
 modify your default settings, you need to build the image again.
-
-Because `~/bin/agent-container` refers to the this source code
-directory, the source code can be edited and the changes will be in
-effect without new deployment.
 
 ## API keys
 
@@ -100,7 +101,7 @@ The commands are:
 
 ## deploy: ([])
 
- Creates a symlink in ~/bin/agent-contaienr pointing to the
+ Creates a symlink in ~/bin/agent-container pointing to the
   agent-container script in this directory and copies default
   configuration files into ~/.config. Must be run in the
   agent-container source directory.
