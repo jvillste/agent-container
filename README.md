@@ -17,8 +17,8 @@ Run `./agent-contaienr deploy` to create a symbolic link to
 files in `~/.config/agent-container` and they will be copied from there
 to the container every time it is started.
 
-Run `./agent-contaienr deploy` to build the container image. This can be repeated to
-update pi and other tools installed in the
+Run `./agent-contaienr deploy` to build the container image. This can
+be repeated to update pi and other tools installed in the
 container. `~/.config/agent-container/settings.json` is copied to the
 image. This must be done at build time, since `pi install` calls later
 in Dockerfile modify settings.json afterwards. Thus, if you want to
@@ -28,22 +28,27 @@ Because `~/bin/agent-container` refers to the this source code
 directory, the source code can be edited and the changes will be in
 effect without new deployment.
 
+## API keys
+
 `~/.config/agent-container/configuration.edn` lists api key
-names. Each name should correspond to password in the mac
-keychain. When the container starts, the corresponding api keys are
-exported to corresponding environment variables, which can be referred
-to in `~/.config/agent-container/models.edn`. The default
-configuration referes to api key "omlx-api-key".
+names. Each name should correspond to a password in the mac keychain
+where the name is set to "name", "account" and "where" fields. When
+the container starts, the corresponding api keys are exported to
+corresponding environment variables, which can be referred to in
+`~/.config/agent-container/models.edn`. The default configuration
+refers to api key `omlx-api-key`, which is available as the
+environment variable `OMLX_API_KEY` in `models.edn`.
 
 To use the default configuration, you should start omlx server,
 install Qwen3.6-27B-oQ4-mtp -model and add the omlx api key to
 a keychain with "name", "account" and "where" fields containing
 "omlx-api-key".
 
-## Tavily
+### Tavily
 
-To use the included tavily extension, add tavily api key to keychain
-with "name", "account" and "where" field set to "tavily-api-key".
+To use the included Tavily extension to allow pi to search the web,
+add Tavily api key to your mac keychain with "name", "account" and
+"where" fields set to "tavily-api-key".
 
 # Usage
 
