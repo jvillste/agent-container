@@ -10,6 +10,9 @@ are:
 - Pi agents network access can be denied, except for given IP
   addresses.
 
+WARNING: This software is at experimental state. Anything may
+drastically change at any point.
+
 # Installation
 
 You must have Clojure and Docker installed in your system.
