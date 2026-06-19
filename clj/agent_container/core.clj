@@ -124,13 +124,20 @@
 (defn build
   "  Build the container image and copy
   ~/.config/agent-container/settings.json into it. Must be run in the
-  agent-container source directory."
-  []
-  (fs/create-dirs "temp")
-  (fs/copy (str (System/getenv "HOME") "/.config/agent-container/settings.json")
-           "temp/user-settings.json")
-  (process/shell {:inherit? true}
-                 "docker build -t agent-container:latest ."))
+  agent-container source directory.
+  supported arguments:
+  :no-cache?: pass \"--no-cache-\" parameter to docker build? Default: false"
+  [& [arguments-map-edn]]
+  (let [arguments (edn/read-string arguments-map-edn)]
+    (fs/create-dirs "temp")
+    (fs/copy (str (System/getenv "HOME") "/.config/agent-container/settings.json")
+             "temp/user-settings.json"
+             {:replace-existing true})
+    (process/shell {:inherit? true}
+                   (str "docker build "
+                        (when (:no-cache? arguments)
+                          "--no-cache ")
+                        "-t agent-container:latest ."))))
 
 (defn deploy
   "  Creates a symlink in ~/bin/agent-contaienr pointing to the
