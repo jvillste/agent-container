@@ -26,7 +26,7 @@ there to the container every time it is started. Because
 source code can be edited and the changes will be in effect without
 new deployment.
 
-Run `./agent-container deploy` to build the container image. This can
+Run `./agent-container build` to build the container image. This can
 be repeated to update pi and other tools installed in the
 container. `~/.config/agent-container/settings.json` is copied to the
 image. This must be done at build time, since `pi install` calls later
