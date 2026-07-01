@@ -1,0 +1,1 @@
+pi --no-context-files --no-extensions --no-skills --no-tools --session-dir "./.pi/sessions" --system-prompt "You are a helpful assistant."

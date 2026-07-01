@@ -1,0 +1,1 @@
+pi --no-context-files --no-extensions  -e npm:pi-hashline-edit -e npm:pi-tavily-tools --no-skills --session-dir "./.pi/sessions" --system-prompt "You are a helpful assistant."

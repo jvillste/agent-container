@@ -65,6 +65,12 @@ to the current directory. The current directory is mounted as
 `/workspace` in the container, so you can work with the same files as
 pi.
 
+# Starting Pi in the container
+
+running `pi` in the container will load the default system promt, all
+skills, extensions and the global AGENTS.md. `pi-chat` loads only
+context for generic chatting.
+
 The commands are:
 
 ## run: ([& [arguments-edn]])
