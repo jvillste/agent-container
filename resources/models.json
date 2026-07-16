@@ -1,4 +1,5 @@
 {
+  "providers": {
     "omlx": {
       "baseUrl": "http://host.docker.internal:8888/v1",
       "api": "openai-completions",
