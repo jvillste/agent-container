@@ -92,12 +92,12 @@
         (System/exit 1)))
 
     (process/shell (format "docker start %s" container-name))
-    (process/shell (format "docker cp %s/AGENTS.md %s:/root/.pi/agent/" resources-dir container-name))
-    (process/shell (format "docker cp %s/bin %s:/root/" resources-dir container-name))
-    (process/shell (format "docker cp %s/models.json %s:/root/.pi/agent/" configuration-directory container-name))
+    (process/shell (format "docker cp \"%s/AGENTS.md\" \"%s:/root/.pi/agent/\"" resources-dir container-name))
+    (process/shell (format "docker cp \"%s/bin\" \"%s:/root/\"" resources-dir container-name))
+    (process/shell (format "docker cp \"%s/models.json\" \"%s:/root/.pi/agent/\"" configuration-directory container-name))
     (doseq [skill-dir (.listFiles (File. (str resources-dir "/skills")))]
       (when (.isDirectory skill-dir)
-        (process/shell (format "docker cp %s %s:/root/.pi/agent/skills/%s"
+        (process/shell (format "docker cp \"%s\" \"%s:/root/.pi/agent/skills/%s\""
                                skill-dir
                                container-name
                                (.getName skill-dir)))))
@@ -148,11 +148,11 @@
   (let [home-directory (System/getenv "HOME")
         source-directory (System/getenv "SOURCE_DIRECTORY")]
     (process/shell {:inherit? true}
-                   (str "ln -sf "
+                   (str "ln -sf \""
                         source-directory
-                        "/agent-container "
+                        "/agent-container\" \""
                         home-directory
-                        "/bin/agent-container"))
+                        "/bin/agent-container\""))
     (let [config-directory (str home-directory "/.config/agent-container")]
       (fs/create-dirs config-directory)
       (doseq [file ["configuration.edn" "models.json" "settings.json"]]
