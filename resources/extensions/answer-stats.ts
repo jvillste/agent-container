@@ -23,10 +23,15 @@ export default function (pi: ExtensionAPI) {
     const elapsedMs = Date.now() - startedAt;
     startedAt = null;
 
-    const seconds = elapsedMs / 1000;
-    const outputTokensPerSecond = seconds > 0 ? generatedTokens / seconds : 0;
-    const inputTokensPerSecond = seconds > 0 ? inputTokens / seconds : 0;
-    const summary = `Answered in ${seconds.toFixed(1)}s • ${inputTokens} input tokens (${Math.round(inputTokensPerSecond)} tok/s) • ${generatedTokens} output tokens (${Math.round(outputTokensPerSecond)} tok/s)`;
+    const totalSeconds = elapsedMs / 1000;
+    const outputTokensPerSecond = totalSeconds > 0 ? generatedTokens / totalSeconds : 0;
+    const inputTokensPerSecond = totalSeconds > 0 ? inputTokens / totalSeconds : 0;
+    const wholeSeconds = Math.floor(totalSeconds);
+    const hours = Math.floor(wholeSeconds / 3600);
+    const minutes = Math.floor((wholeSeconds % 3600) / 60);
+    const seconds = wholeSeconds % 60;
+    const duration = hours > 0 ? `${hours}h ${minutes}m ${seconds}s` : `${minutes}m ${seconds}s`;
+    const summary = `Answered in ${duration} • ${inputTokens} input tokens (${Math.round(inputTokensPerSecond)} tok/s) • ${generatedTokens} output tokens (${Math.round(outputTokensPerSecond)} tok/s)`;
     generatedTokens = 0;
     inputTokens = 0;
     if (ctx.hasUI) {
