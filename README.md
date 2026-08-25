@@ -55,6 +55,14 @@ To use the included Tavily extension to allow pi to search the web,
 add Tavily api key to your mac keychain with "name", "account" and
 "where" fields set to "tavily-api-key".
 
+# Extension development
+
+When developing extensions in resources/extensions folder, start the
+agent container and then run remove-container-extensions.sh in it. it
+removes the extensions from the container folder
+~/.pi/agent/extensions. .pi/settings.json tells pi to load extensions
+from resources/extensions.
+
 # Usage
 
 Run `agent-container` to get list of commands.
