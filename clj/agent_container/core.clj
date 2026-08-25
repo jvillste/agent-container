@@ -101,6 +101,15 @@
                                skill-dir
                                container-name
                                (.getName skill-dir)))))
+
+    (process/shell (format "docker exec %s mkdir -p /root/.pi/agent/extensions" container-name))
+
+    (doseq [extensions-dir (.listFiles (File. (str resources-dir "/extensions")))]
+      (process/shell (format "docker cp \"%s\" \"%s:/root/.pi/agent/extensions/%s\""
+                             extensions-dir
+                             container-name
+                             (.getName extensions-dir))))
+
     (process/shell (format "docker exec %s touch /root/this-is-an-agent-container" container-name))
 
     (process/shell (format "docker exec -it --detach-keys=ctrl-z,z %s bash" container-name))
