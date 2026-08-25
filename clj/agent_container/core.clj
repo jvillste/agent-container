@@ -119,7 +119,8 @@
 (defn remove-container
   "  Removes the Docker container."
   {:command-name "remove"}[]
-  (process/shell (str "docker rm " (docker/container-name))))
+  (process/shell {:continue true}
+                 (str "docker rm " (docker/container-name))))
 
 (defn bash
   "  Start bash shell in the running container."
