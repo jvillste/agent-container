@@ -19,8 +19,9 @@
   written without spaces inbetween. That is why you often make
   mistakes when writing them. Don't fix existing code to adhere to
   this convention.
-- After you are happy with the code edits in a file, run "cljfmt fix"
-  for it to remove the excess spaces between closing parentheses.
+- After you are happy with the code edits in a file, run "cljfmt fix
+  some-file.clj" for it to remove the excess spaces between closing
+  parentheses.
 - If you run into paren related syntax errors, run "clj-paren-repair
   <file-name>" with bash to fix the parens in the file.
 - Split code to pure functions and to imperative functions and add
