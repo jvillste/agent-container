@@ -71,6 +71,10 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
   alias.
 
 # Writing clojure code
+- When writing Clojure code, you must separate adjacent closing
+  parentheses with a single space. e.g., write ) ) ) instead of
+  ))). Never clump closing parentheses together. I have an automated
+  linter that will strip the spaces later.
 - If you run into paren related syntax errors, run "clj-paren-repair
   <file-name>" with bash to fix the parens in the file.
 - Split code to pure functions and to imperative functions and add
