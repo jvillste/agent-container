@@ -75,6 +75,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
   parentheses with a single space. e.g., write ) ) ) instead of
   ))). Never clump closing parentheses together. I have an automated
   linter that will strip the spaces later.
+- After editing a clojure file, run "cljfmt fix" for it.
 - If you run into paren related syntax errors, run "clj-paren-repair
   <file-name>" with bash to fix the parens in the file.
 - Split code to pure functions and to imperative functions and add
