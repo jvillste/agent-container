@@ -14,9 +14,13 @@
 # Writing clojure code
 - When writing Clojure code, you must separate adjacent closing
   parentheses with a single space. e.g., write ) ) ) instead of
-  ))). Never clump closing parentheses together. I have an automated
-  linter that will strip the spaces later.
-- After editing a clojure file, run "cljfmt fix" for it.
+  ))). Never clump closing parentheses together. This is because you
+  as a language model do not see individual parenthesis if they are
+  written without spaces inbetween. That is why you often make
+  mistakes when writing them. Don't fix existing code to adhere to
+  this convention.
+- After you are happy with the code edits in a file, run "cljfmt fix"
+  for it to remove the excess spaces between closing parentheses.
 - If you run into paren related syntax errors, run "clj-paren-repair
   <file-name>" with bash to fix the parens in the file.
 - Split code to pure functions and to imperative functions and add

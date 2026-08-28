@@ -89,5 +89,7 @@ RUN cd /root && git clone https://github.com/realgenekim/clj-surgeon.git && cd c
 RUN echo 'export PATH="$PATH:$HOME/bin"' >> /root/.bashrc
 RUN mkdir -p ~/.pi/agent/skills/clj-surgeon && cp ~/clj-surgeon/skill.md ~/.pi/agent/skills/clj-surgeon/SKILL.md
 RUN bash -ic 'bash < <(curl -s https://raw.githubusercontent.com/clojure-lsp/clojure-lsp/master/install)'
+RUN ARCH=$(uname -m); if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then SUFFIX=aarch64; else SUFFIX=amd64-static; fi; \
+    curl -fsSL -o /tmp/cljfmt.tar.gz "https://github.com/weavejester/cljfmt/releases/download/0.16.5/cljfmt-0.16.5-linux-${SUFFIX}.tar.gz" && tar -xzf /tmp/cljfmt.tar.gz -C /usr/local/bin && rm /tmp/cljfmt.tar.gz
 
 CMD ["sleep", "infinity"]
