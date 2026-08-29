@@ -24,7 +24,6 @@
 - If you run into paren related syntax errors, run "clj-paren-repair
   <file-name>" with bash to fix the parens in the file.
 
-
 # Clojure style guide
 
 - Split code to pure functions and to imperative functions and add
