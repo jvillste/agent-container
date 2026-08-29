@@ -3,31 +3,40 @@
 - Always run tests before concluding that the requested code change is
   completed.
 - If you suspect that the user made a mistake in their request, ask if
-  they acutally meant something else.
+  they actually meant something else.
 
 # Code style
 
 - Use descriptive english words, no abbreviations or single letter
-  names. For example "string" insteado of "str" for the clojure.string
+  names. For example "string" instead of "str" for the clojure.string
   alias.
 
 # Formatting clojure code
 
-- To prevent tokenizer-induced errors when generating closing parens:
-  when writing Clojure code, you must separate adjacent closing
-  parentheses with a single space. e.g., write ) ) ) instead of
-  ))). Never clump closing parentheses together. Don't fix existing
-  code to adhere to this convention.
-- After you are happy with the code edits in a file, run "cljfmt fix
-  <file-name>" for it to remove the excess spaces between closing
-  parentheses.
-- If you run into paren related syntax errors, run "clj-paren-repair
-  <file-name>" with bash to fix the parens in the file.
+Applies to Clojure, ClojureScript and CLJC files (.clj, .cljs, .cljc).
+- Step 1, while writing: separate adjacent closing parentheses with a
+  single space, e.g. write `(println greeting) ) ) )` instead of
+  `(println greeting))))`. Long unbroken runs of closing parens are
+  where the tokenizer tends to drop or invent one, and the padding
+  removes that failure mode. Pad closing parens only, never opening
+  ones, and only in code you author - leave code you did not write
+  alone rather than reformatting it to this convention.
+- Step 2, before calling the change done: run `cljfmt fix <file-name>`
+  via bash. It strips the padding again, so the file that ends up on
+  disk is idiomatic and clumped `)))`. The padding is a drafting aid,
+  never the committed style; do not hand-strip it yourself.
+- Recovery: if the compiler still reports "Unmatched delimiter",
+  "unexpected delimiter" or "EOF while reading", run
+  `clj-paren-repair <file-name>` via bash instead of counting parens
+  by hand. It expects idiomatically indented input, so run it after
+  `cljfmt fix`, then re-run the tests.
+- Both commands are on PATH (`cljfmt`, `clj-paren-repair`).
+
 
 # Clojure style guide
 
 - Split code to pure functions and to imperative functions and add
-  tests for pure functinos right below the function implementation, if
+  tests for pure functions right below the function implementation, if
   the function is worth testing.
 - Use separate namespaces for tests only when the test requires
   imports that are not available in the namespace that is being
