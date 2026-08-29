@@ -11,19 +11,22 @@
   names. For example "string" insteado of "str" for the clojure.string
   alias.
 
-# Writing clojure code
-- When writing Clojure code, you must separate adjacent closing
+# Formatting clojure code
+
+- To prevent tokenizer-induced errors when generating closing parens:
+  when writing Clojure code, you must separate adjacent closing
   parentheses with a single space. e.g., write ) ) ) instead of
-  ))). Never clump closing parentheses together. This is because you
-  as a language model do not see individual parenthesis if they are
-  written without spaces inbetween. That is why you often make
-  mistakes when writing them. Don't fix existing code to adhere to
-  this convention.
+  ))). Never clump closing parentheses together. Don't fix existing
+  code to adhere to this convention.
 - After you are happy with the code edits in a file, run "cljfmt fix
-  some-file.clj" for it to remove the excess spaces between closing
+  <file-name>" for it to remove the excess spaces between closing
   parentheses.
 - If you run into paren related syntax errors, run "clj-paren-repair
   <file-name>" with bash to fix the parens in the file.
+
+
+# Clojure style guide
+
 - Split code to pure functions and to imperative functions and add
   tests for pure functinos right below the function implementation, if
   the function is worth testing.
