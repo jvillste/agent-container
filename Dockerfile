@@ -86,10 +86,9 @@ ENV EDITOR=emacs
 # install clj-kondo
 RUN cd /root && curl -sLO https://raw.githubusercontent.com/clj-kondo/clj-kondo/master/script/install-clj-kondo && chmod +x install-clj-kondo && ./install-clj-kondo
 
-# install clojure surgeon
+# install clj-surgeon (needs babashka and clj-kondo on PATH, installed above)
 RUN cd /root && git clone https://github.com/realgenekim/clj-surgeon.git && cd clj-surgeon && mkdir -p ~/bin && make install
-RUN mkdir -p ~/.pi/agent/skills/clj-surgeon && cp ~/clj-surgeon/skill.md ~/.pi/agent/skills/clj-surgeon/SKILL.md
-
+RUN mkdir -p ~/.pi/agent/skills/clj-surgeon && cp -RL ~/.claude/skills/clj-surgeon/. ~/.pi/agent/skills/clj-surgeon/
 
 # install clojure-lsp
 RUN bash -ic 'bash < <(curl -s https://raw.githubusercontent.com/clojure-lsp/clojure-lsp/master/install)'
