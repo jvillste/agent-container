@@ -79,6 +79,7 @@
                               --pids-limit=512
                               -v \"%s:/workspace\"
                               -e TAVILY_API_KEY=\"" (get-password "tavily-api-key") "\"
+                              -e PI_CODING_AGENT_SESSION_DIR=/workspace/.pi/sessions
                               %s
                               %s
                               -w /workspace
