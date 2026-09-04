@@ -13,34 +13,21 @@
 
 # Formatting clojure code
 
-Applies to Clojure, ClojureScript and CLJC files (.clj, .cljs, .cljc).
-- Step 1, while writing: separate adjacent closing parentheses with a
-  single space, e.g. write `(println greeting) ) ) )` instead of
-  `(println greeting))))`. Long unbroken runs of closing parens are
-  where the tokenizer tends to drop or invent one, and the padding
-  removes that failure mode. Pad closing parens only, never opening
-  ones, and only in code you author - leave code you did not write
-  alone rather than reformatting it to this convention.
-- Step 2, before calling the change done: run `cljfmt fix <file-name>`
-  via bash. It strips the padding again, so the file that ends up on
-  disk is idiomatic and clumped `)))`. The padding is a drafting aid,
-  never the committed style; do not hand-strip it yourself.
-- Recovery: if the compiler still reports "Unmatched delimiter",
+- If the clojure compiler reports "Unmatched delimiter",
   "unexpected delimiter" or "EOF while reading", run
   `clj-paren-repair <file-name>` via bash instead of counting parens
-  by hand. It expects idiomatically indented input, so run it after
-  `cljfmt fix`, then re-run the tests.
-- Both commands are on PATH (`cljfmt`, `clj-paren-repair`).
+  by hand.
 
 
 # Clojure style guide
-
+- Use clojure.test for tests.
 - Split code to pure functions and to imperative functions and add
   tests for pure functions right below the function implementation, if
   the function is worth testing.
 - Use separate namespaces for tests only when the test requires
-  imports that are not available in the namespace that is being
-  tested.
+  imports other than clojure.test that are not available in the
+  namespace that is being tested.
+- require clojure.test like this in the ns form: [clojure.test :refer [deftest is testing]]
 - The name for a test that tests a single function should be formatted
   by prefixing the function name with "test-". For example
   "my-function" should be formatted like "test-my-function".
