@@ -61,11 +61,7 @@ WORKDIR /workspace
 
 # set path
 RUN echo 'export PATH="$PATH:$HOME/.local/bin"' >> /root/.bashrc
-RUN echo 'export PATH="$PATH:$HOME/bin"' >> /root/.bashrc
-
-# install pi extensions
-RUN pi install npm:pi-tavily-tools
-RUN pi install npm:pi-hashline-edit
+RUN echo 'export PATH="$HOME/bin:$PATH"' >> /root/.bashrc
 
 # install bbin
 RUN mkdir -p ~/.local/bin && curl -o- -L https://raw.githubusercontent.com/babashka/bbin/v0.2.5/bbin > ~/.local/bin/bbin && chmod +x ~/.local/bin/bbin

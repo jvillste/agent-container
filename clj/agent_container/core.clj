@@ -96,6 +96,7 @@
     (process/shell (format "docker cp \"%s/AGENTS.md\" \"%s:/root/.pi/agent/\"" resources-dir container-name))
     (process/shell (format "docker cp \"%s/bin\" \"%s:/root/\"" resources-dir container-name))
     (process/shell (format "docker cp \"%s/models.json\" \"%s:/root/.pi/agent/\"" configuration-directory container-name))
+    (process/shell (format "docker cp \"%s/settings.json\" \"%s:/root/.pi/agent/\"" configuration-directory container-name))
     (doseq [skill-dir (.listFiles (File. (str resources-dir "/skills")))]
       (when (.isDirectory skill-dir)
         (process/shell (format "docker cp \"%s\" \"%s:/root/.pi/agent/skills/%s\""
