@@ -1,1 +1,1 @@
-pi -e npm:pi-hashline-edit -e npm:pi-tavily-tools
+/usr/bin/pi -e npm:pi-hashline-edit -e npm:pi-tavily-tools
