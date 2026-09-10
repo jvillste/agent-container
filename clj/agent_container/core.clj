@@ -48,17 +48,23 @@
 (defn run
   "  Runs the agent container. Optionally give arguments as an edn map.
 
-  The only supported parameter is :volumes, which must be a vector of
-  source and target paths to be mounted to the container when it is
-  created.  Note that if the container already exists, it must be
-  removed before the volumes can be mounted.
+  Optional prameters are:
+
+  :volumes: must be a vector of source and target paths to be mounted
+  to the container when it is created.  Note that if the container
+  already exists, it must be removed before the volumes can be
+  mounted.
+
+  :container-name: overrides the current folder name as the container
+  name.
 
   an example:
   \"{:volumes [\\\"./resources\\\" \"/resources\"]}\""
   [& [arguments-edn]]
   (let [arguments (edn/read-string arguments-edn)
         configuration (configuration)
-        container-name (docker/container-name)
+        container-name (or (:container-name arguments)
+                           (docker/container-name))
         resources-dir (str (System/getenv "SOURCE_DIRECTORY") "/resources")]
     (if (empty? (:out (process/shell {:out :string :exit? true}
                                      (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name))))
@@ -120,10 +126,22 @@
     (process/shell (format "docker stop %s" container-name))))
 
 (defn remove-container
-  "  Removes the Docker container."
-  {:command-name "remove"}[]
+  "  Removes the Docker container.
+
+  Optionally give arguments as an edn map.
+
+  Optional prameters are:
+
+  :container-name: overrides the current folder name as the container
+  name.
+
+  "
+  {:command-name "remove"}
+  [& [arguments-edn]]
   (process/shell {:continue true}
-                 (str "docker rm " (docker/container-name))))
+                 (str "docker rm "
+                      (or (:container-name (edn/read-string arguments-edn))
+                          (docker/container-name)))))
 
 (defn bash
   "  Start bash shell in the running container."
