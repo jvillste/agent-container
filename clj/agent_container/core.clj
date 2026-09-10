@@ -66,6 +66,7 @@
           (process/shell {:inherit? true}
                          (format (str "docker create
                               --name %s
+                              --init
                               --cap-drop=ALL
                               --cap-add=CHOWN
                               --cap-add=DAC_OVERRIDE
