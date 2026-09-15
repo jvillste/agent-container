@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     bash \
     python3 \
     openssh-client \
-    openjdk-21-jdk \
+    openjdk-25-jdk \
     emacs-nox \
     curl \
     iptables \
