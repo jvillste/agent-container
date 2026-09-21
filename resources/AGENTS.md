@@ -2,8 +2,13 @@
 
 - Always run tests before concluding that the requested code change is
   completed.
-- If you suspect that the user made a mistake in their request, ask if
-  they actually meant something else.
+- If you suspect that I made a mistake in my request, ask if I
+  actually meant something else.
+- You are running in a Docker container sandbox reserved for this
+  project so you can install all the software you need. The Docker
+  host that I'm using is macos.
+- You most likely have an Internet access. I sometimes restrict it
+  though.
 
 # Code style
 
