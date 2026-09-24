@@ -62,13 +62,18 @@
   \"{:volumes [\\\"./resources\\\" \"/resources\"]}\""
   [& [arguments-edn]]
   (let [arguments (edn/read-string arguments-edn)
+        home-directory (System/getenv "HOME")
         configuration (configuration)
         container-name (or (:container-name arguments)
                            (docker/container-name))
+        session-dir (str home-directory "/pi-sessions/" container-name)
         resources-dir (str (System/getenv "SOURCE_DIRECTORY") "/resources")]
     (if (empty? (:out (process/shell {:out :string :exit? true}
                                      (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name))))
       (do (println "creating container" container-name)
+
+          (fs/create-dirs session-dir)
+
           (process/shell {:inherit? true}
                          (format (str "docker create
                               --name %s
@@ -86,13 +91,15 @@
                               --pids-limit=512
                               -v \"%s:/workspace\"
                               -e TAVILY_API_KEY=\"" (get-password "tavily-api-key") "\"
+                              -e PI_CODING_AGENT_SESSION_DIR=/pi-sessions
                               %s
                               %s
                               -w /workspace
                               agent-container:latest")
                                  container-name
                                  (docker/current-working-directory)
-                                 (volume-flags (:volumes arguments))
+                                 (volume-flags (concat (:volumes arguments)
+                                                       [session-dir "/pi-sessions"]))
                                  (string/join " " (map api-key-environment-value-flag (:api-key-names configuration))))))
       (when (:volumes arguments)
         (println "The container must be removed before mounting volumes.")
