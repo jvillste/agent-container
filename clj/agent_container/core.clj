@@ -67,9 +67,11 @@
         container-name (or (:container-name arguments)
                            (docker/container-name))
         session-dir (str home-directory "/pi-sessions/" container-name)
-        resources-dir (str (System/getenv "SOURCE_DIRECTORY") "/resources")]
-    (if (empty? (:out (process/shell {:out :string :exit? true}
-                                     (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name))))
+        resources-dir (str (System/getenv "SOURCE_DIRECTORY") "/resources")
+        container-did-not-exist? (empty? (:out (process/shell {:out :string :exit? true}
+                                                              (format "docker ps -a --filter name=^%s$ --format '{{.Names}}'" container-name))))]
+
+    (if container-did-not-exist?
       (do (println "creating container" container-name)
 
           (fs/create-dirs session-dir)
@@ -99,8 +101,11 @@
                                  container-name
                                  (docker/current-working-directory)
                                  (volume-flags (concat (:volumes arguments)
-                                                       [session-dir "/pi-sessions"]))
+                                                       [session-dir "/pi-sessions"]
+                                                       (when (:mount-local-maven-repository? arguments)
+                                                         [(str home-directory "/.m2/repository") "/host-maven-repository"])))
                                  (string/join " " (map api-key-environment-value-flag (:api-key-names configuration))))))
+
       (when (:volumes arguments)
         (println "The container must be removed before mounting volumes.")
         (System/exit 1)))
@@ -126,6 +131,11 @@
                              (.getName extensions-dir))))
 
     (process/shell (format "docker exec %s touch /root/this-is-an-agent-container" container-name))
+
+    (when (and container-did-not-exist?
+               (:mount-local-maven-repository? arguments))
+      (println "executing add-host-maven-repository-to-leiningen")
+      (process/shell (format "docker exec %s bash /root/bin/add-host-maven-repository-to-leiningen" container-name)))
 
     (process/shell (format "docker exec -it --detach-keys=ctrl-z,z %s bash" container-name))
 

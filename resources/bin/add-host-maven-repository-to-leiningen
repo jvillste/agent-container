@@ -1,0 +1,21 @@
+!/usr/bin/env bash
+
+LEIN_DIR="$HOME/.lein"
+PROFILES_FILE="$LEIN_DIR/profiles.clj"
+
+mkdir -p "$LEIN_DIR"
+
+if [ -f "$PROFILES_FILE" ]; then
+  echo "profiles.clj already exists. Skipping." >&2
+  exit 1
+fi
+
+echo "Creating $PROFILES_FILE with mirror /host-maven-repository for central and clojars."
+
+cat > "$PROFILES_FILE" <<'EOF'
+{:user
+ {:mirrors {
+    "central" {:name "local-maven" :url "file:///host-maven-repository" :checksum :ignore}
+    "clojars" {:name "local-maven" :url "file:///host-maven-repository" :checksum :ignore}
+  }}}
+EOF
