@@ -58,6 +58,9 @@
   :container-name: overrides the current folder name as the container
   name.
 
+  :mount-local-maven-repository?: mount ~/.m2/repository into the
+  container and use that as a mirror for clojars and central.
+
   an example:
   \"{:volumes [\\\"./resources\\\" \"/resources\"]}\""
   [& [arguments-edn]]
