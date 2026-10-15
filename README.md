@@ -133,8 +133,9 @@ from resources/extensions.
 ## update-pi: ([])
 
   Updates pi in the container image. Runs "/usr/bin/pi update" in a
-  temporary container and commits the result as the new
-  agent-container:latest image.
+  temporary container, and if it succeeds, commits the result as the
+  new agent-container:latest image with the command reset to
+  "sleep infinity".
 
 ## build: ([& [arguments-map-edn]])
 

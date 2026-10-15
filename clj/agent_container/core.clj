@@ -211,17 +211,22 @@
 
 (defn update-pi
   "  Updates pi in the container image. Runs \"/usr/bin/pi update\" in a
-  temporary container and commits the result as the new
-  agent-container:latest image."
+  temporary container, and if it succeeds, commits the result as the
+  new agent-container:latest image with the command reset to
+  \"sleep infinity\"."
+  {:command-name "update-pi"}
   []
-  (let [container-id (string/trim
-                      (:out (process/shell {:out :string}
-                                            "docker run -d --name pi-update-tmp agent-container:latest /usr/bin/pi update")))]
-    (try
-      (process/shell (format "docker commit %s agent-container:latest" container-id))
-      (finally
-        (process/shell {:continue true}
-                       (str "docker rm -f " container-id))))))
+  (process/shell {:continue true}
+                 "docker rm -f pi-update-tmp")
+  (try
+    (process/shell {:inherit? true}
+                   "docker run --name pi-update-tmp agent-container:latest /usr/bin/pi update")
+    (process/shell (str "docker commit"
+                        " --change 'CMD [\"sleep\", \"infinity\"]'"
+                        " pi-update-tmp agent-container:latest"))
+    (finally
+      (process/shell {:continue true}
+                     "docker rm -f pi-update-tmp"))))
 
 (defn container-name-command
   "  Prints the name of the docker container corresponding to this
