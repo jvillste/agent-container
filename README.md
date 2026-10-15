@@ -65,37 +65,36 @@ from resources/extensions.
 
 # Usage
 
-Run `agent-container` to get list of commands.
-
-Each container is identified by the name of the directory where the
-container is started. The commands target the container corresponding
-to the current directory. The current directory is mounted as
-`/workspace` in the container, so you can work with the same files as
-pi.
-
-# Starting Pi in the container
-
-running `pi` in the container will load the default system promt, all
-skills, extensions and the global AGENTS.md. `pi-chat` loads only
-context for generic chatting.
-
-The commands are:
-
 ## run: ([& [arguments-edn]])
 
   Runs the agent container. Optionally give arguments as an edn map.
 
-  The only supported parameter is :volumes, which must be a vector of
-  source and target paths to be mounted to the container when it is
-  created.  Note that if the container already exists, it must be
-  removed before the volumes can be mounted.
+  Optional prameters are:
+
+  :volumes: must be a vector of source and target paths to be mounted
+  to the container when it is created.  Note that if the container
+  already exists, it must be removed before the volumes can be
+  mounted.
+
+  :container-name: overrides the current folder name as the container
+  name.
+
+  :mount-local-maven-repository?: mount ~/.m2/repository into the
+  container and use that as a mirror for clojars and central.
 
   an example:
   "{:volumes [\"./resources\" "/resources"]}"
 
-## remove: ([])
+## remove: ([& [arguments-edn]])
 
   Removes the Docker container.
+
+  Optionally give arguments as an edn map.
+
+  Optional prameters are:
+
+  :container-name: overrides the current folder name as the container
+  name.
 
 ## bash: ([])
 
@@ -131,8 +130,16 @@ The commands are:
   configuration files into ~/.config. Must be run in the
   agent-container source directory.
 
-## build: ([])
+## update-pi: ([])
+
+  Updates pi in the container image. Runs "/usr/bin/pi update" in a
+  temporary container and commits the result as the new
+  agent-container:latest image.
+
+## build: ([& [arguments-map-edn]])
 
   Build the container image and copy
   ~/.config/agent-container/settings.json into it. Must be run in the
   agent-container source directory.
+  supported arguments:
+  :no-cache?: pass "--no-cache-" parameter to docker build? Default: false

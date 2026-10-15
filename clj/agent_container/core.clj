@@ -152,9 +152,7 @@
   Optional prameters are:
 
   :container-name: overrides the current folder name as the container
-  name.
-
-  "
+  name."
   {:command-name "remove"}
   [& [arguments-edn]]
   (process/shell {:continue true}
@@ -211,6 +209,20 @@
 
     (println "Deployment ready.")))
 
+(defn update-pi
+  "  Updates pi in the container image. Runs \"/usr/bin/pi update\" in a
+  temporary container and commits the result as the new
+  agent-container:latest image."
+  []
+  (let [container-id (string/trim
+                      (:out (process/shell {:out :string}
+                                            "docker run -d --name pi-update-tmp agent-container:latest /usr/bin/pi update")))]
+    (try
+      (process/shell (format "docker commit %s agent-container:latest" container-id))
+      (finally
+        (process/shell {:continue true}
+                       (str "docker rm -f " container-id))))))
+
 (defn container-name-command
   "  Prints the name of the docker container corresponding to this
   directory."
@@ -224,6 +236,7 @@
                #'network/unrestrict-network
                #'container-name-command
                #'deploy
+               #'update-pi
                #'build])
 
 (defn command-name [command-var]
