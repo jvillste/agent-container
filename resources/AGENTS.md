@@ -1,7 +1,7 @@
 # Coding workflow
 
-- Always run tests before concluding that the requested code change is
-  completed.
+- If possible, run tests before concluding that the requested code change is
+  completed. Try at least that the code compiles withot errors.
 - If you suspect that I made a mistake in my request, ask if I
   actually meant something else.
 - You are running in a Docker container sandbox reserved for this
@@ -21,21 +21,28 @@
 - If the clojure compiler reports "Unmatched delimiter",
   "unexpected delimiter" or "EOF while reading", run
   `clj-paren-repair <file-name>` via bash instead of counting parens
-  by hand.
+  manually.
 
+# About Clojure tests
 
-# Clojure style guide
 - Use clojure.test for tests.
+- Require clojure.test like this in the ns form: [clojure.test :refer [deftest is testing]]
 - Split code to pure functions and to imperative functions and add
   tests for pure functions right below the function implementation, if
   the function is worth testing.
 - Use separate namespaces for tests only when the test requires
   imports other than clojure.test that are not available in the
   namespace that is being tested.
-- require clojure.test like this in the ns form: [clojure.test :refer [deftest is testing]]
 - The name for a test that tests a single function should be formatted
   by prefixing the function name with "test-". For example
   "my-function" should be formatted like "test-my-function".
+- In lein based projects, run only the relevant test with "lein test
+  :only some-namespace/some-test"
+
+# Clojure style guide
+
+- Add docstrings only to public functions if the function name and
+  parameter names are not clear enough.
 - Use foo-to-bar instead of foo->bar when naming functions.
 - If possible, give the last word in the namespace path as alias for
   required namespaces. If the last word is "core" use the one before
@@ -46,5 +53,3 @@
 - Use let to introduce local bindings only when the binding is used
   more than once in the body. Do not give names to values only to
   document their meaning.
-- in lein based projects, run only the relevant test with "lein test
-  :only some-namespace/some-test"
