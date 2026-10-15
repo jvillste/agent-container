@@ -14,8 +14,8 @@ echo "Creating $PROFILES_FILE with mirror /host-maven-repository for central and
 
 cat > "$PROFILES_FILE" <<'EOF'
 {:user
- {:mirrors {
-    "central" {:name "local-maven" :url "file:///host-maven-repository" :checksum :ignore}
-    "clojars" {:name "local-maven" :url "file:///host-maven-repository" :checksum :ignore}
-  }}}
+ {:repositories [
+   ["local-maven" {:url "file:///host-maven-repository" :checksum :ignore}]
+   ["central" {:url "https://repo1.maven.org/maven2/" :snapshots false}]
+   ["clojars" {:url "https://repo.clojars.org/"}]]}}
 EOF
