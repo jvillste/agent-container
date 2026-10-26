@@ -8,6 +8,7 @@ ENV TZ=Europe/Helsinki
 
 # Base OS packages + Java + tools commonly needed in Clojure/CLJS projects
 RUN apt-get update && apt-get install -y \
+    ripgrep \
     ca-certificates \
     curl \
     git \
