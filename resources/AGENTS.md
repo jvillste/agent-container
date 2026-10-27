@@ -9,6 +9,7 @@
   host that I'm using is macos.
 - You most likely have an Internet access. I sometimes restrict it
   though.
+- Use ripgrep instead of grep to search faster.
 
 # Code style
 
@@ -29,7 +30,8 @@
 - Require clojure.test like this in the ns form: [clojure.test :refer [deftest is testing]]
 - Split code to pure functions and to imperative functions and add
   tests for pure functions right below the function implementation, if
-  the function is worth testing.
+  the function is worth testing. Do not do this for trivial functions
+  that are easy to implement correctly on the first try.
 - Use separate namespaces for tests only when the test requires
   imports other than clojure.test that are not available in the
   namespace that is being tested.
