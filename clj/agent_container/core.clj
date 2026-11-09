@@ -45,6 +45,18 @@
                  (string/replace "-" "_"))
        "=\"" (string/trim (get-password api-key-name)) "\""))
 
+(defn- copy-configuration-file-to-the-contaner [configuration-file-name-prefix file-name container-name]
+  (process/shell (str "docker cp \""
+                      configuration-directory
+                      "/"
+                      configuration-file-name-prefix
+                      file-name
+                      "\" \""
+                      container-name
+                      ":/root/.pi/agent/"
+                      file-name
+                      "\"")))
+
 (defn run
   "  Runs the agent container. Optionally give arguments as an edn map.
 
@@ -61,6 +73,10 @@
   :mount-local-maven-repository?: mount ~/.m2/repository into the
   container and use that as a mirror for clojars and central.
 
+  :configuration-file-name-prefix: a prefix added to the settings.json and
+  configuration.json file names to select which files to copy into the
+  container from ~/.config/agent-container/
+
   an example:
   \"{:volumes [\\\"./resources\\\" \"/resources\"]}\""
   [& [arguments-edn]]
@@ -69,6 +85,8 @@
         configuration (configuration)
         container-name (or (:container-name arguments)
                            (docker/container-name))
+        configuration-file-name-prefix (or (:configuration-file-name-prefix arguments)
+                                           "")
         session-dir (str home-directory "/pi-sessions/" container-name)
         resources-dir (str (System/getenv "SOURCE_DIRECTORY") "/resources")
         container-did-not-exist? (empty? (:out (process/shell {:out :string :exit? true}
@@ -116,9 +134,19 @@
     (process/shell (format "docker start %s" container-name))
     (process/shell (format "docker cp \"%s/AGENTS.md\" \"%s:/root/.pi/agent/\"" resources-dir container-name))
     (process/shell (format "docker cp \"%s/bin\" \"%s:/root/\"" resources-dir container-name))
-    (process/shell (format "docker cp \"%s/models.json\" \"%s:/root/.pi/agent/\"" configuration-directory container-name))
-    (process/shell (format "docker cp \"%s/settings.json\" \"%s:/root/.pi/agent/\"" configuration-directory container-name))
-    (process/shell (format "docker cp \"%s/keybindings.json\" \"%s:/root/.pi/agent/\"" configuration-directory container-name))
+
+    (copy-configuration-file-to-the-contaner configuration-file-name-prefix
+                                             "settings.json"
+                                             container-name)
+
+    (copy-configuration-file-to-the-contaner configuration-file-name-prefix
+                                             "models.json"
+                                             container-name)
+
+    (copy-configuration-file-to-the-contaner ""
+                                             "keybindings.json"
+                                             container-name)
+
     (doseq [skill-dir (.listFiles (File. (str resources-dir "/skills")))]
       (when (.isDirectory skill-dir)
         (process/shell (format "docker cp \"%s\" \"%s:/root/.pi/agent/skills/%s\""
