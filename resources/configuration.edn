@@ -6,4 +6,6 @@
                  "repo1.maven.org:443"
                  "repo.clojars.org:443"
                  "registry.npmjs.org:443"
-                 "api.tavily.com:443"]}
+                 "api.tavily.com:443"
+                 "github.com:443"
+                 "release-assets.githubusercontent.com:443"]}
