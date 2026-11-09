@@ -141,7 +141,12 @@
       (println "executing add-host-maven-repository-to-leiningen")
       (process/shell (format "docker exec %s bash /root/bin/add-host-maven-repository-to-leiningen" container-name)))
 
-    (process/shell (format "docker exec -it --detach-keys=ctrl-z,z %s bash" container-name))
+    (apply network/restrict-network
+           (or (:allowed-hosts configuration)
+               ["host.docker.internal:8888"]))
+
+    (process/shell {:continue true}
+                   (format "docker exec -it --detach-keys=ctrl-z,z %s bash" container-name))
 
     (process/shell (format "docker stop %s" container-name))))
 
