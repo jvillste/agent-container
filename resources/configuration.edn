@@ -5,4 +5,5 @@
                  "openrouter.ai:443"
                  "repo1.maven.org:443"
                  "repo.clojars.org:443"
-                 "registry.npmjs.org:443"]}
+                 "registry.npmjs.org:443"
+                 "api.tavily.com:443"]}
