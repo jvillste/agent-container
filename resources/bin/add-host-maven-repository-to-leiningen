@@ -1,4 +1,4 @@
-!/usr/bin/env bash
+#!/usr/bin/env bash
 
 LEIN_DIR="$HOME/.lein"
 PROFILES_FILE="$LEIN_DIR/profiles.clj"
