@@ -55,3 +55,17 @@
 - Use let to introduce local bindings only when the binding is used
   more than once in the body. Do not give names to values only to
   document their meaning.
+
+# Shell scripts in clojure
+
+You can create shell scripts as clojure code like this:
+
+```
+#!./clojure-shell-script
+'{:deps {babashka/fs {:mvn/version "0.5.34"}}}
+
+(ns clojure-shell-script
+  (:require [babashka.fs :as fs]))
+
+(println (fs/directory? (first *command-line-args*)))
+```
