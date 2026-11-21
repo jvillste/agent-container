@@ -1,1 +1,2 @@
-/usr/bin/pi -e npm:pi-hashline-edit -e npm:pi-tavily-tools --tui-mode regular
+#!/usr/bin/bash
+/usr/bin/pi -e npm:pi-hashline-edit -e npm:pi-tavily-tools
