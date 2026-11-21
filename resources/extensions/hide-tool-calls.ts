@@ -14,6 +14,9 @@
  *   /tool-calls hide       collapse rows and thinking blocks
  *   /tool-calls show       restore the normal transcript
  *
+ * The toggle also works while the agent is running. Existing rows are redrawn in
+ * place instead of waiting for a reload.
+ *
  * Keyboard shortcut: ctrl+v toggles the summary. Paste moved to alt+v in
  * keybindings.json, because extension shortcuts are dispatched before the
  * paste keybinding in the editor.
@@ -25,7 +28,6 @@ import type {
 	ToolRendererResolver,
 	ToolRenderers,
 } from "@earendil-works/pi-coding-agent";
-import { SettingsManager } from "@earendil-works/pi-coding-agent";
 import { Container, Text } from "@earendil-works/pi-tui";
 
 /** Hidden content of one burst of work; the first tool call row renders it. */
@@ -53,23 +55,52 @@ interface VisibilityState {
 	pendingThinkingBlocks: number;
 	countedThinkingBlocks: number;
 	lastIndexRebuildAt: number;
+	/** Interactive TUI captured for redrawing existing rows without a reload. */
+	tui?: unknown;
 }
 
 type CallRenderer = NonNullable<ToolRenderers["renderCall"]>;
 type ResultRenderer = NonNullable<ToolRenderers["renderResult"]>;
+type RenderTheme = Parameters<CallRenderer>[1];
+type RenderContext = Parameters<CallRenderer>[2];
+type ResultOptions = Parameters<ResultRenderer>[1];
 
 interface RowRenderContext {
 	toolCallId: string;
 	invalidate: () => void;
-	state: Record<string, unknown>;
+	state: Record<PropertyKey, unknown>;
+}
+
+interface ToolRow {
+	children: unknown[];
+	contentBox: unknown;
+	selfRenderContainer: unknown;
+	toolCallId: string;
+	toolName: string;
+	toolDefinition?: { renderShell?: "default" | "self"; baseRenderShell?: "default" | "self" };
+	getRenderShell?: () => "default" | "self";
+	invalidate: () => void;
+}
+
+interface AssistantRow {
+	hideThinkingBlock?: boolean;
+	lastMessage?: unknown;
+	isStreaming?: boolean;
+	updateContent?: (message: unknown, isStreaming?: boolean) => void;
+	setHideThinkingBlock?: (hide: boolean) => void;
+	thinkingVisibilityOverrides?: { clear?: () => void };
+	__toolCallSummaryOriginalHideThinkingBlock?: boolean;
+	__toolCallSummaryPatched?: boolean;
 }
 
 const GROUP_INDEX_MIN_REBUILD_INTERVAL_MS = 1000;
+const TUI_CAPTURE_WIDGET_KEY = "hide-tool-calls-tui-capture";
+const BASE_CALL_COMPONENT = Symbol("toolCallSummaryBaseCallComponent");
+const BASE_RESULT_COMPONENT = Symbol("toolCallSummaryBaseResultComponent");
 
 /**
- * Pi reloads extensions when the visibility changes, which re-evaluates this
- * module. Storing the state on `globalThis` keeps the toggle and the burst index
- * across that reload.
+ * Pi re-evaluates this module on /reload. Storing the state on `globalThis` keeps
+ * the toggle and the burst index across that reload.
  */
 function getVisibilityState(): VisibilityState {
 	const globalRecord = globalThis as typeof globalThis & { __piToolCallSummary?: VisibilityState };
@@ -178,24 +209,59 @@ function toolCallIdsOfMessage(message: unknown): string[] {
 	return toolCallIds;
 }
 
-/**
- * Pi has no API for changing the `hideThinkingBlock` setting. Returning true
- * while the summary is active makes Pi treat thinking blocks as hidden; an empty
- * hidden-thinking label then makes those hidden blocks render no lines at all.
- */
-function installThinkingBlockPatch(state: VisibilityState): void {
-	const prototype = SettingsManager.prototype as unknown as {
-		getHideThinkingBlock: () => boolean;
-		__toolCallSummaryPatched?: boolean;
-	};
-	if (prototype.__toolCallSummaryPatched === true) {
-		return;
+function createFallbackCall(toolName: string, args: unknown, theme: RenderTheme, expanded: boolean): Text {
+	const header = theme.fg("toolTitle", theme.bold(toolName));
+	if (args === undefined || args === null) {
+		return new Text(header, 0, 0);
 	}
-	const originalGetHideThinkingBlock = prototype.getHideThinkingBlock;
-	prototype.getHideThinkingBlock = function (this: unknown): boolean {
-		return state.hidden || originalGetHideThinkingBlock.call(this);
-	};
-	prototype.__toolCallSummaryPatched = true;
+	const entries: Array<[string, unknown]> =
+		typeof args === "object" && !Array.isArray(args)
+			? Object.entries(args as Record<string, unknown>)
+			: [["args", args]];
+	if (entries.length === 0) {
+		return new Text(header, 0, 0);
+	}
+	if (expanded) {
+		const lines = entries.map(([key, value]) => {
+			const text = typeof value === "string" ? value : (JSON.stringify(value, null, 2) ?? String(value));
+			return `  ${key}: ${text.replace(/\t/g, "    ").replace(/\r/g, "").split("\n").join("\n    ")}`;
+		});
+		return new Text(`${header}\n${theme.fg("muted", lines.join("\n"))}`, 0, 0);
+	}
+	const pairs = entries.map(([key, value]) => `${key}=${JSON.stringify(value) ?? String(value)}`).join(" ");
+	const preview = pairs.length > 100 ? `${pairs.slice(0, 97)}...` : pairs;
+	return new Text(`${header} ${theme.fg("muted", preview)}`, 0, 0);
+}
+
+function stripAnsi(text: string): string {
+	return text.replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "");
+}
+
+function toolResultText(result: Parameters<ResultRenderer>[0]): string {
+	return result.content
+		.filter((item) => item.type === "text")
+		.map((item) => stripAnsi(item.text ?? "").replace(/\r/g, ""))
+		.join("\n");
+}
+
+function createFallbackResult(
+	result: Parameters<ResultRenderer>[0],
+	options: ResultOptions,
+	theme: RenderTheme,
+	context: RenderContext,
+): Container | Text {
+	const output = toolResultText(result);
+	if (output === "") {
+		return createEmptyComponent();
+	}
+	const lines = output.split("\n");
+	const displayLines = options.expanded ? lines : lines.slice(0, 10);
+	const remaining = lines.length - displayLines.length;
+	let text = displayLines.map((line) => theme.fg("toolOutput", line)).join("\n");
+	if (remaining > 0) {
+		text += `${theme.fg("muted", `\n... (${remaining} more lines,`)} ${context.keyHint("app.tools.expand", "to expand")}${theme.fg("muted", ")")}`;
+	}
+	return new Text(text, 0, 0);
 }
 
 /**
@@ -264,7 +330,9 @@ function flushPendingThinkingBlocks(state: VisibilityState): void {
 	state.currentBurst ??= createBurst();
 	state.currentBurst.thinkingBlocks += state.pendingThinkingBlocks;
 	state.pendingThinkingBlocks = 0;
-	state.currentBurst.invalidateLeader?.();
+	if (state.hidden) {
+		state.currentBurst.invalidateLeader?.();
+	}
 }
 
 /**
@@ -293,7 +361,7 @@ function joinLiveBurst(state: VisibilityState, context: RowRenderContext): Burst
 		burst.thinkingBlocks += state.pendingThinkingBlocks;
 		state.pendingThinkingBlocks = 0;
 	}
-	if (leaderIsAnotherRow) {
+	if (leaderIsAnotherRow && state.hidden) {
 		// The leader row renders the counts, so redraw it when the burst grows.
 		burst.invalidateLeader?.();
 	}
@@ -359,70 +427,326 @@ function applyThinkingBlockVisibility(state: VisibilityState, context: Extension
 	}
 }
 
+/**
+ * The extension UI context does not expose the TUI, but a widget factory receives
+ * it synchronously. Add and remove a throwaway widget to get the root component.
+ */
+function captureTui(context: ExtensionContext): unknown {
+	let capturedTui: unknown;
+	context.ui.setWidget(TUI_CAPTURE_WIDGET_KEY, (tui) => {
+		capturedTui = tui;
+		return new Container();
+	});
+	context.ui.setWidget(TUI_CAPTURE_WIDGET_KEY, undefined);
+	return capturedTui;
+}
+
+function visitComponents(
+	component: unknown,
+	visit: (component: unknown) => void,
+	visited: Set<unknown> = new Set(),
+): void {
+	if (typeof component !== "object" || component === null || visited.has(component)) {
+		return;
+	}
+	visited.add(component);
+	visit(component);
+	const children = (component as { children?: unknown }).children;
+	if (Array.isArray(children)) {
+		for (const child of children) {
+			visitComponents(child, visit, visited);
+		}
+	}
+	const child = (component as { child?: unknown }).child;
+	if (child !== undefined) {
+		visitComponents(child, visit, visited);
+	}
+}
+
+function isToolRow(component: unknown): component is ToolRow {
+	if (typeof component !== "object" || component === null) {
+		return false;
+	}
+	const candidate = component as Record<string, unknown>;
+	return (
+		Array.isArray(candidate.children) &&
+		typeof candidate.toolCallId === "string" &&
+		typeof candidate.toolName === "string" &&
+		candidate.contentBox !== undefined &&
+		candidate.selfRenderContainer !== undefined &&
+		typeof candidate.invalidate === "function"
+	);
+}
+
+function isAssistantRow(component: unknown): component is AssistantRow {
+	if (typeof component !== "object" || component === null) {
+		return false;
+	}
+	const candidate = component as Record<string, unknown>;
+	return (
+		typeof candidate.updateContent === "function" &&
+		typeof candidate.setHideThinkingBlock === "function"
+	);
+}
+
+function mountedRootsOf(tui: unknown): unknown[] {
+	if (typeof tui !== "object" || tui === null) {
+		return [];
+	}
+	const candidate = tui as {
+		getMountedRoots?: () => unknown[];
+		layoutRoot?: unknown;
+		children?: unknown;
+	};
+	if (typeof candidate.getMountedRoots === "function") {
+		return candidate.getMountedRoots();
+	}
+	const roots: unknown[] = [];
+	if (candidate.layoutRoot !== undefined) {
+		roots.push(candidate.layoutRoot);
+	}
+	if (Array.isArray(candidate.children)) {
+		roots.push(...candidate.children);
+	}
+	return roots;
+}
+
+function collectToolRows(tui: unknown): ToolRow[] {
+	const rows: ToolRow[] = [];
+	const visited = new Set<unknown>();
+	for (const root of mountedRootsOf(tui)) {
+		visitComponents(
+			root,
+			(component) => {
+				if (isToolRow(component)) {
+					rows.push(component);
+				}
+			},
+			visited,
+		);
+	}
+	return rows;
+}
+
+function collectAssistantRows(tui: unknown): AssistantRow[] {
+	const rows: AssistantRow[] = [];
+	const visited = new Set<unknown>();
+	for (const root of mountedRootsOf(tui)) {
+		visitComponents(
+			root,
+			(component) => {
+				if (isAssistantRow(component)) {
+					rows.push(component);
+				}
+			},
+			visited,
+		);
+	}
+	return rows;
+}
+
+/**
+ * A row keeps the shell container it was built with. Swap that container when the
+ * visibility changes so existing rows redraw with the same framing as new ones.
+ */
+function applyToolRowShells(tui: unknown, state: VisibilityState): void {
+	for (const row of collectToolRows(tui)) {
+		const shell =
+			typeof row.getRenderShell === "function"
+				? row.getRenderShell()
+				: state.hidden
+					? "self"
+					: (row.toolDefinition?.baseRenderShell ?? "default");
+		const desired = shell === "self" ? row.selfRenderContainer : row.contentBox;
+		const other = shell === "self" ? row.contentBox : row.selfRenderContainer;
+		const children = row.children;
+		const otherIndex = children.indexOf(other);
+		if (otherIndex !== -1) {
+			children.splice(otherIndex, 1);
+			if (!children.includes(desired)) {
+				children.splice(otherIndex, 0, desired);
+			}
+		} else if (!children.includes(desired)) {
+			// Keep the row's leading spacer first and its images after the shell.
+			const insertIndex = children.length > 0 ? 1 : 0;
+			children.splice(insertIndex, 0, desired);
+		}
+		row.invalidate();
+	}
+}
+
+/**
+ * Remember the user's own thinking-block setting before forcing the summary
+ * state, so showing the transcript again restores that setting.
+ */
+function installAssistantRowOverride(row: AssistantRow, state: VisibilityState): void {
+	if (row.__toolCallSummaryPatched === true) {
+		return;
+	}
+	row.__toolCallSummaryOriginalHideThinkingBlock = row.hideThinkingBlock ?? false;
+	const originalSetHideThinkingBlock = row.setHideThinkingBlock;
+	if (originalSetHideThinkingBlock !== undefined) {
+		row.setHideThinkingBlock = function (this: AssistantRow, hide: boolean): void {
+			this.__toolCallSummaryOriginalHideThinkingBlock = hide;
+			originalSetHideThinkingBlock.call(this, state.hidden || hide);
+		};
+	}
+	row.__toolCallSummaryPatched = true;
+}
+
+function applyThinkingVisibilityToRows(tui: unknown, state: VisibilityState): AssistantRow[] {
+	const changedRows: AssistantRow[] = [];
+	for (const row of collectAssistantRows(tui)) {
+		installAssistantRowOverride(row, state);
+		const original = row.__toolCallSummaryOriginalHideThinkingBlock ?? row.hideThinkingBlock ?? false;
+		const desired = state.hidden || original;
+		const changed = row.hideThinkingBlock !== desired;
+		row.hideThinkingBlock = desired;
+		if (state.hidden) {
+			// A click on a thinking block must not reveal it while the summary is active.
+			row.thinkingVisibilityOverrides?.clear?.();
+		}
+		if (changed) {
+			changedRows.push(row);
+		}
+	}
+	return changedRows;
+}
+
+function refreshAssistantRows(rows: AssistantRow[]): void {
+	for (const row of rows) {
+		if (row.lastMessage !== undefined && row.updateContent !== undefined) {
+			row.updateContent(row.lastMessage, row.isStreaming);
+		}
+	}
+}
+
 export default function (pi: ExtensionAPI) {
 	const state = getVisibilityState();
-	installThinkingBlockPatch(state);
 
-	const rendererResolver: ToolRendererResolver = (_toolName, next) => {
-		if (!state.hidden) {
-			return next();
-		}
-		const renderCall: CallRenderer = (_args, theme, context) => {
+	const rendererResolver: ToolRendererResolver = (toolName, next) => {
+		const base = next();
+		const baseRenderShell = base?.renderShell ?? "default";
+		const renderCall: CallRenderer = (args, theme, context) => {
+			// Track bursts even while the transcript is visible so the counts are
+			// ready when the user hides the rows mid-run.
 			const burst = assignRowToBurst(state, context);
-			if (burst.leaderToolCallId !== context.toolCallId) {
+			if (state.hidden) {
+				if (burst.leaderToolCallId !== context.toolCallId) {
+					return createEmptyComponent();
+				}
+				return new Text(theme.fg("muted", formatSummary(burst)), 0, 0);
+			}
+			if (base?.renderCall !== undefined) {
+				const baseContext = { ...context, lastComponent: context.state[BASE_CALL_COMPONENT] };
+				const component = base.renderCall(args, theme, baseContext);
+				context.state[BASE_CALL_COMPONENT] = component;
+				return component;
+			}
+			return createFallbackCall(toolName, args, theme, context.expanded);
+		};
+		const renderResult: ResultRenderer = (result, options, theme, context) => {
+			if (state.hidden) {
 				return createEmptyComponent();
 			}
-			return new Text(theme.fg("muted", formatSummary(burst)), 0, 0);
+			if (base?.renderResult !== undefined) {
+				const baseContext = { ...context, lastComponent: context.state[BASE_RESULT_COMPONENT] };
+				const component = base.renderResult(result, options, theme, baseContext);
+				context.state[BASE_RESULT_COMPONENT] = component;
+				return component;
+			}
+			return createFallbackResult(result, options, theme, context);
 		};
-		const renderResult: ResultRenderer = () => createEmptyComponent();
-		return { renderShell: "self", renderCall, renderResult };
+		const renderers: ToolRenderers & { baseRenderShell: "default" | "self" } = {
+			baseRenderShell,
+			get renderShell() {
+				return state.hidden || baseRenderShell === "self" ? "self" : "default";
+			},
+			renderCall,
+			renderResult,
+		};
+		return renderers;
 	};
 
 	pi.registerToolRenderer(rendererResolver);
 
-	// Fallback for the thinking patch above: if Pi's class identity ever changes,
-	// blank thinking markdown instead of showing it.
+	// Blank thinking markdown while the summary is active. This works for both
+	// existing and newly created message components.
 	pi.registerMarkdownTransformer((markdown) => (state.hidden ? "" : markdown), {
 		messageTypes: ["assistant-thinking"],
 	});
 
-	pi.registerCommand("tool-calls", {
-		description: "Summarize or show tool call rows and thinking blocks: /tool-calls [hide|show]",
-		handler: async (argument, context) => {
-			if (!context.hasUI) {
-				return;
-			}
-			const requested = argument.trim().toLowerCase();
-			if (requested !== "" && requested !== "hide" && requested !== "show") {
-				context.ui.notify("Usage: /tool-calls [hide|show]", "warning");
-				return;
-			}
-			const shouldHide = requested === "" ? !state.hidden : requested === "hide";
+	const applyRequestedVisibility = async (
+		argument: string,
+		context: ExtensionContext,
+		reload?: () => Promise<void>,
+	): Promise<void> => {
+		if (!context.hasUI) {
+			return;
+		}
+		const requested = argument.trim().toLowerCase();
+		if (requested !== "" && requested !== "hide" && requested !== "show") {
+			context.ui.notify("Usage: /tool-calls [hide|show]", "warning");
+			return;
+		}
+		const shouldHide = requested === "" ? !state.hidden : requested === "hide";
+		if (shouldHide === state.hidden) {
+			context.ui.notify(shouldHide ? "Tool calls are already summarized" : "Tool calls are already visible", "info");
+			return;
+		}
+		if (context.mode !== "tui") {
 			if (!context.isIdle()) {
 				context.ui.notify("Wait for the current response to finish before changing tool call visibility", "warning");
 				return;
 			}
-			if (shouldHide === state.hidden) {
-				context.ui.notify(shouldHide ? "Tool calls are already summarized" : "Tool calls are already visible", "info");
+			if (reload === undefined) {
+				context.ui.notify("Could not update tool call visibility", "warning");
 				return;
 			}
 			state.hidden = shouldHide;
-			// A reload is the only way to redraw existing rows with different renderers.
-			await context.reload();
+			await reload();
+			return;
+		}
+		let tui: unknown;
+		try {
+			tui = captureTui(context);
+		} catch {
+			tui = undefined;
+		}
+		if (tui === undefined) {
+			if (context.isIdle() && reload !== undefined) {
+				state.hidden = shouldHide;
+				await reload();
+				return;
+			}
+			context.ui.notify("Could not update tool call visibility", "warning");
+			return;
+		}
+		state.tui = tui;
+		state.hidden = shouldHide;
+		applyVisibilityStatus(context, state.hidden);
+		applyThinkingVisibilityToRows(tui, state);
+		applyThinkingBlockVisibility(state, context);
+		applyToolRowShells(tui, state);
+	};
+
+	pi.registerCommand("tool-calls", {
+		description: "Summarize or show tool call rows and thinking blocks: /tool-calls [hide|show]",
+		handler: async (argument, context) => {
+			await applyRequestedVisibility(argument, context, () => context.reload());
 		},
 	});
 
-	// Shortcut handlers receive a plain ExtensionContext, which has no reload(), so
-	// route the toggle through the command: its handler gets a command context that
-	// can reload the extension and redraw the existing rows.
+	// Shortcut handlers receive a plain ExtensionContext, which is enough for the
+	// in-place redraw used in the TUI. Toggle directly so it also works mid-run.
 	pi.registerShortcut("ctrl+v", {
 		description: "Toggle tool call summary (/tool-calls)",
-		handler: () => {
-			pi.sendUserMessage("/tool-calls", { expandPromptTemplates: true });
+		handler: async (context) => {
+			await applyRequestedVisibility("", context);
 		},
 	});
 
-	pi.on("message_start", (event) => {
+	pi.on("message_start", (event, context) => {
 		if (event.message.role === "user") {
 			state.currentBurst = undefined;
 			resetMessageTracking(state);
@@ -430,18 +754,36 @@ export default function (pi: ExtensionAPI) {
 		}
 		if (event.message.role === "assistant") {
 			resetMessageTracking(state);
+			if (state.hidden && context.mode === "tui") {
+				// Let the interactive mode create its streaming component first.
+				setTimeout(() => {
+					try {
+						if (!state.hidden) {
+							return;
+						}
+						const tui = state.tui ?? captureTui(context);
+						if (tui === undefined) {
+							return;
+						}
+						state.tui = tui;
+						refreshAssistantRows(applyThinkingVisibilityToRows(tui, state));
+					} catch {
+						// The session may have been replaced before the timeout ran.
+					}
+				}, 0);
+			}
 		}
 	});
 
 	pi.on("message_update", (event) => {
-		if (!state.hidden || event.message.role !== "assistant") {
+		if (event.message.role !== "assistant") {
 			return;
 		}
 		updateStreamedMessage(state, event.message);
 	});
 
 	pi.on("message_end", (event) => {
-		if (!state.hidden || event.message.role !== "assistant") {
+		if (event.message.role !== "assistant") {
 			return;
 		}
 		updateStreamedMessage(state, event.message);
@@ -470,10 +812,13 @@ export default function (pi: ExtensionAPI) {
 		state.sessionManager = context.sessionManager;
 		state.currentBurst = undefined;
 		state.agentRunning = false;
+		state.tui = undefined;
 		resetMessageTracking(state);
 		rebuildBurstIndex(state);
 		if (context.hasUI) {
 			applyVisibilityStatus(context, state.hidden);
+			// The new interactive mode starts with its default hidden-thinking label.
+			state.thinkingLabelCleared = false;
 			applyThinkingBlockVisibility(state, context);
 		}
 	});
