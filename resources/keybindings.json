@@ -1,4 +1,12 @@
 {
   "$schema": "https://pi.dev/schemas/keybindings.schema.json",
-  "app.session.new": "ctrl+j"
+  "app.session.new": "ctrl+j",
+  "app.session.tree": "ctrl+alt+t",
+  "tui.editor.cursorUp": ["up", "ctrl+p"],
+  "tui.editor.cursorDown": ["down", "ctrl+n"],
+  "tui.select.up": ["up", "ctrl+p"],
+  "tui.select.down": ["down", "ctrl+n"],
+  "app.editor.external": ["ctrl+alt+g"],
+  "app.interrupt": ["escape", "ctrl+g"],
+  "app.model.cycleForward": "ctrl+alt+p"
 }
