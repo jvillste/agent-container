@@ -8,5 +8,10 @@
   "tui.select.down": ["down", "ctrl+n"],
   "app.editor.external": ["ctrl+alt+g"],
   "app.interrupt": ["escape", "ctrl+g"],
-  "app.model.cycleForward": "ctrl+alt+p"
+  "tui.select.cancel": ["escape", "ctrl+g"],
+  "app.model.cycleForward": "ctrl+alt+l",
+  "tui.altScreen.lineUp": "ctrl+alt+p",
+  "tui.altScreen.lineDown": "ctrl+alt+n",
+  "tui.altScreen.halfPageUp": "alt+p",
+  "tui.altScreen.halfPageDown": "alt+n"
 }
