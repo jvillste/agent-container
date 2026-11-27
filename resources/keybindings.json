@@ -1,6 +1,7 @@
 {
   "$schema": "https://pi.dev/schemas/keybindings.schema.json",
   "app.session.new": "ctrl+j",
+  "app.session.resume": ["ctrl+alt+j"],
   "app.session.tree": "ctrl+alt+t",
   "tui.editor.cursorUp": ["up", "ctrl+p"],
   "tui.editor.cursorDown": ["down", "ctrl+n"],
@@ -13,5 +14,6 @@
   "tui.altScreen.lineUp": "ctrl+alt+p",
   "tui.altScreen.lineDown": "ctrl+alt+n",
   "tui.altScreen.halfPageUp": "alt+p",
-  "tui.altScreen.halfPageDown": "alt+n"
+  "tui.altScreen.halfPageDown": "alt+n",
+  "app.clipboard.pasteImage": "alt+v"
 }
